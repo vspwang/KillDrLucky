@@ -1,0 +1,44 @@
+40 43 Arrakis Palace
+90 Muad'Dib
+20
+ 0  4  3 10 Spice Hall
+ 0 13  3 19 Desert Balcony
+ 0 23  3 30 Sandstorm Corridor
+ 4  7  7 12 Crysknife Chamber
+ 4 32  7 39 Guild Dock
+ 8  2 11  8 Fremen Quarters
+ 8 14 11 20 Stilltent Garden
+ 8 25 11 31 Temple of Shai-Hulud
+ 12  6 15 12 Atriedes Palace Hall
+ 12 33 15 39 Ornithopter Hangar
+ 16  1 19  7 Spice Refinery
+ 16 16 19 22 Water Storage Vault
+ 16 27 19 33 Bene Gesserit Study
+ 20  9 23 15 Imperial Council Room
+ 20 34 23 41 Shield Generator Core
+ 24  3 27  9 Windtrap Plaza
+ 24 17 27 23 Sietch Passage
+ 24 28 27 34 Sardaukar Barracks
+ 29  8 33 15 Worm Shrine
+ 34 26 38 33 Deep Desert Outpost
+20
+0 3 Crysknife
+1 2 Sand Compass
+2 3 Dune Rifle
+3 4 Stillsuit Blade
+4 3 Spice Bomb
+5 2 Fremen Hook
+6 3 Sand Cloak
+7 2 Water Needle
+8 3 Maker Call Horn
+9 4 Thopter Wing
+10 2 Refinery Drill
+11 3 Water Crystal
+12 3 Voice Amplifier
+13 2 Imperial Scepter
+14 3 Shield Emitter
+15 2 Air Filter Rod
+16 3 Tunnel Dagger
+17 3 Sardaukar Saber
+18 4 Sacred Worm Tooth
+19 3 Desert Blaster

@@ -1,0 +1,21 @@
+=== World Info ===
+Name: Arrakis Palace
+Grid: 40 rows x 43 cols
+Spaces: 20
+Target starts at space: 0
+
+=== Neighbors of space 5 (Fremen Quarters) ===
+[3, 8]
+
+=== Describe space 5 ===
+Room: Fremen Quarters
+Items: Fremen Hook(2) 
+Visible from here: Crysknife Chamber Stilltent Garden Atriedes Palace Hall
+
+=== Move Target ===
+Current target space: 0
+After move 1: 1
+After move 2: 2
+After move 3: 3
+
+Map image written to: /Users/yuliaw/CS5010/KillDrLucky/killdrlucky/res/ArrakisPalace.png
