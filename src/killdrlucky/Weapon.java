@@ -10,7 +10,7 @@ public class Weapon implements Item {
 
   private final String name;
   private final int damage;
-  private final int roomIndex;
+  private int roomIndex;
 
   /**
    * Constructs a Weapon object.
@@ -73,5 +73,11 @@ public class Weapon implements Item {
   public String toString() {
     return "Weapon{" + "name='" + name + '\'' + ", damage=" + damage + ", roomIndex=" + roomIndex
         + '}';
+  }
+
+  @Override
+  public void setRoomIndex(int i) {
+    this.roomIndex = i;
+    
   }
 }

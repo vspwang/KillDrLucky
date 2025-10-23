@@ -24,4 +24,10 @@ public interface Item {
    * @return the index of the room that contains this item
    */
   int getRoomIndex();
+
+  /**.
+  *
+  * @param i set room index of this item
+  */
+  void setRoomIndex(int i);
 }

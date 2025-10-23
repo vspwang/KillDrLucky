@@ -1,21 +1,196 @@
-=== World Info ===
-Name: Arrakis Palace
-Grid: 40 rows x 43 cols
-Spaces: 20
-Target starts at space: 0
+Map image saved to: /Users/yuliaw/CS5010/KillDrLucky/world_map.png
+Welcome to Kill Doctor Lucky!
+Type 'help' for command list.
+1
 
-=== Neighbors of space 5 (Fremen Quarters) ===
-[3, 8]
+No players yet. Use: add <name> <startIndex> <isAi>
+> Please add at least one player before starting.
+add human1 1 false
 
-=== Describe space 5 ===
-Room: Fremen Quarters
-Items: Fremen Hook(2) 
-Visible from here: Crysknife Chamber Stilltent Garden Atriedes Palace Hall
+> Added player human1 (AI: false) at space 1
 
-=== Move Target ===
-Current target space: 0
-After move 1: 1
-After move 2: 2
-After move 3: 3
+Players added. Game begins!
+1
 
-Map image written to: /Users/yuliaw/CS5010/KillDrLucky/killdrlucky/res/ArrakisPalace.png
+--- Turn 1 ---
+Current player: human1
+Enter command (help for list): add bot 2 true
+Added player bot (AI: true) at space 2
+1
+
+--- Turn 1 ---
+Current player: human1
+Enter command (help for list): describe human1
+Player: human1 (Human)
+Current Space: Billiard Room
+Items: None
+1
+
+--- Turn 1 ---
+Current player: human1
+Enter command (help for list): space Billiard Room
+Room: Billiard Room
+Items: Billiard Cue(2) 
+Visible from here: Armory Trophy Room Dining Hall 
+Neighbors: Armory Dining Hall Trophy Room
+1
+
+--- Turn 1 ---
+Current player: human1
+Enter command (help for list): look human1
+You are in Billiard Room.
+Items: Billiard Cue(2) 
+You can see: Armory Trophy Room Dining Hall
+
+--- Turn 1 ---
+Current player: human1
+Enter command (help for list): pickup human1 Billiard Cue
+human1 picked up Billiard Cue.
+1
+
+--- Turn 2 ---
+Current player: bot
+
+==============================
+ AI Turn — bot
+==============================
+Before action:
+Player: bot (AI)
+Current Space: Carriage House
+Items: None
+[AI Action] bot (AI) moved to Winter Garden.
+After action:
+Player: bot (AI)
+Current Space: Winter Garden
+Items: None
+1
+
+
+--- Turn 3 ---
+Current player: human1
+Enter command (help for list): move human1 Dining Hall
+human1 moved to Dining Hall
+q
+
+--- Turn 4 ---
+Current player: bot
+
+==============================
+ AI Turn — bot
+==============================
+Before action:
+Player: bot (AI)
+Current Space: Winter Garden
+Items: None
+[AI Action] bot (AI) looked around but found nothing.
+After action:
+Player: bot (AI)
+Current Space: Winter Garden
+Items: None
+1
+
+--- Turn 5 ---
+Current player: human1
+Enter command (help for list): space Dining Hall
+Room: Dining Hall
+Items: none
+Visible from here: Armory Billiard Room Tennessee Room Trophy Room Wine Cellar Drawing Room Kitchen Parlor 
+Neighbors: Armory Billiard Room Drawing Room Kitchen Parlor Tennessee Room Trophy Room Wine Cellar
+a
+
+--- Turn 5 ---
+Current player: human1
+Enter command (help for list): move human1 Trophy Room
+human1 moved to Trophy Room
+1
+
+--- Turn 6 ---
+Current player: bot
+
+==============================
+ AI Turn — bot
+==============================
+Before action:
+Player: bot (AI)
+Current Space: Winter Garden
+Items: None
+[AI Action] bot (AI) moved to Piazza.
+After action:
+Player: bot (AI)
+Current Space: Piazza
+Items: None
+1
+
+
+--- Turn 7 ---
+Current player: human1
+Enter command (help for list): help
+
+Available commands:
+add <name> <startIndex> <isAi>   - Add player (AI or human)
+move <name> <direction>          - Move the player
+pickup <name> <itemName>         - Pick up an item in same room
+look <name>                      - Look around current room
+describe <name>                  - Describe player
+space <roomName>                 - Describe room
+save <filename>                  - Save world image (mock)
+quit                             - End the game
+pickup human Monkey Hand
+
+--- Turn 7 ---
+Current player: human1
+Enter command (help for list): s
+Unknown command. Type 'help' for available options.
+move human1 kitechen
+
+--- Turn 7 ---
+Current player: human1
+Enter command (help for list): move human1 kitchen
+No neighboring space named 'kitchen'.
+1
+
+--- Turn 8 ---
+Current player: bot
+
+==============================
+ AI Turn — bot
+==============================
+Before action:
+Player: bot (AI)
+Current Space: Piazza
+Items: None
+[AI Action] bot (AI) moved to Foyer.
+After action:
+Player: bot (AI)
+Current Space: Foyer
+Items: None
+
+1
+
+
+--- Turn 9 ---
+Current player: human1
+Enter command (help for list): move human1 Library
+human1 moved to Library
+1
+
+--- Turn 10 ---
+Current player: bot
+
+==============================
+ AI Turn — bot
+==============================
+Before action:
+Player: bot (AI)
+Current Space: Foyer
+Items: None
+[AI Action] bot (AI) moved to Piazza.
+After action:
+Player: bot (AI)
+Current Space: Piazza
+Items: None
+1
+
+Game over! Turns played: 10
+(Reached maximum number of turns)
+Thank you for playing!

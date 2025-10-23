@@ -31,7 +31,7 @@ public interface ReadOnlyWorld {
    *
    * @return a read-only list of all spaces (rooms) in the world
    */
-  List<Room> getSpaces();
+  List<Space> getSpaces();
 
   /**
    * Retrieves a space by index.
@@ -40,7 +40,7 @@ public interface ReadOnlyWorld {
    * @return the space with that index
    * @throws IllegalArgumentException if index is invalid
    */
-  Room getSpace(int idx);
+  Space getSpace(int idx);
 
   /**.
    *
@@ -72,4 +72,11 @@ public interface ReadOnlyWorld {
    * @return a formatted string describing that space
    */
   String describeSpace(int idx);
+  
+  /**
+   * Returns all items in the world.
+   *
+   * @return list of all items
+   */
+  List<Item> getItems();
 }

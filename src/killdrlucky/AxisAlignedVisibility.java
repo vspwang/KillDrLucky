@@ -14,7 +14,7 @@ import java.util.Set;
 public class AxisAlignedVisibility implements VisibilityStrategy {
 
   @Override
-  public Set<Integer> visibleFrom(int idx, List<Room> spaces) {
+  public Set<Integer> visibleFrom(int idx, List<Space> spaces) {
     if (spaces == null || spaces.isEmpty()) {
       throw new IllegalArgumentException("Spaces cannot be null or empty.");
     }
@@ -23,7 +23,7 @@ public class AxisAlignedVisibility implements VisibilityStrategy {
     }
 
     Set<Integer> visible = new HashSet<>();
-    Room source = spaces.get(idx);
+    Space source = spaces.get(idx);
     Rect srcRect = source.getArea();
 
     int srcTop = srcRect.getUpperLeft().getRow();
@@ -36,7 +36,7 @@ public class AxisAlignedVisibility implements VisibilityStrategy {
         continue;
       }
 
-      Room target = spaces.get(i);
+      Space target = spaces.get(i);
       Rect tgtRect = target.getArea();
 
       int tgtTop = tgtRect.getUpperLeft().getRow();
@@ -58,7 +58,7 @@ public class AxisAlignedVisibility implements VisibilityStrategy {
             continue;
           }
 
-          Room blocker = spaces.get(j);
+          Space blocker = spaces.get(j);
           Rect b = blocker.getArea();
 
           // Case 1: horizontal alignment, check x-axis overlap between source and target
