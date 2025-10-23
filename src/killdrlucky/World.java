@@ -3,30 +3,35 @@ package killdrlucky;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 /**
  * Concrete implementation of the WorldModel interface. Represents the full game
  * state for Kill Dr Lucky.
  */
-public class World implements WorldModel {
+public class World implements WorldModel, GameModelApi {
 
   private final String name;
   private final int rows;
   private final int cols;
-  private final List<Room> spaces;
+  private final List<Space> spaces;
   private final List<Item> items;
-  private final List<Player> players;
+  private final List<Iplayer> players;
   private final Target target;
   private final VisibilityStrategy visibilityStrategy;
   private final Map<Integer, List<Integer>> neighbors;
+  private boolean gameOver;
+  private final Random random;
 
   /**
    * Constructs a World object from parsed data.
@@ -35,15 +40,20 @@ public class World implements WorldModel {
    * @param visibilityStrategy the strategy to use for visibility
    */
   public World(WorldParser.WorldData data, VisibilityStrategy visibilityStrategy) {
-    this.name = Objects.requireNonNull(data.worldName);
+    if (data == null || visibilityStrategy == null) {
+      throw new IllegalArgumentException("Parameters cannot be null");
+    }
+    this.name = data.worldName;
     this.rows = data.rows;
     this.cols = data.cols;
     this.spaces = new ArrayList<>(data.rooms);
     this.items = new ArrayList<>(data.items);
-    this.target = Objects.requireNonNull(data.target);
-    this.players = new ArrayList<>(); // initially empty (can be added later)
-    this.visibilityStrategy = Objects.requireNonNull(visibilityStrategy);
+    this.target = data.target;
+    this.visibilityStrategy = visibilityStrategy;
     this.neighbors = computeNeighbors();
+    this.players = new ArrayList<>();
+    this.random = new Random();
+    this.gameOver = false;
   }
 
   // ---------- Core Queries ----------
@@ -64,12 +74,12 @@ public class World implements WorldModel {
   }
 
   @Override
-  public List<Room> getSpaces() {
+  public List<Space> getSpaces() {
     return Collections.unmodifiableList(spaces);
   }
 
   @Override
-  public Room getSpace(int idx) {
+  public Space getSpace(int idx) {
     if (idx < 0 || idx >= spaces.size()) {
       throw new IllegalArgumentException("Invalid space index: " + idx);
     }
@@ -96,7 +106,7 @@ public class World implements WorldModel {
 
   @Override
   public String describeSpace(int idx) {
-    Room r = getSpace(idx);
+    Space r = getSpace(idx);
     StringBuilder sb = new StringBuilder();
 
     sb.append("Room: ").append(r.getName()).append("\n");
@@ -127,9 +137,30 @@ public class World implements WorldModel {
         sb.append(spaces.get(v).getName()).append(" ");
       }
     }
+    
+    // Add neighbors section
+    sb.append("\nNeighbors: ");
+    List<Integer> adj = neighborsOf(idx);
+    if (adj == null || adj.isEmpty()) {
+      sb.append("none");
+    } else {
+      for (int n : adj) {
+        sb.append(spaces.get(n).getName()).append(" ");
+      }
+    }
+    
     return sb.toString().trim();
   }
 
+  @Override
+  public String describeSpace(String spaceName) {
+    for (int i = 0; i < spaces.size(); i++) {
+      if (spaces.get(i).getName().equalsIgnoreCase(spaceName)) {
+        return describeSpace(i);
+      }
+    }
+    throw new IllegalArgumentException("Space not found: " + spaceName);
+  }
 
   // ---------- Game Mechanics ----------
 
@@ -148,7 +179,7 @@ public class World implements WorldModel {
       return AttackStatus.TARGET_ALREADY_DEAD;
     }
 
-    Player p = players.get(playerId);
+    Iplayer p = players.get(playerId);
     if (p.getCurrentSpaceIndex() != target.getCurrentSpaceIndex()) {
       return AttackStatus.NOT_SAME_SPACE;
     }
@@ -178,7 +209,7 @@ public class World implements WorldModel {
       return status;
     }
 
-    Player p = players.get(playerId);
+    Iplayer p = players.get(playerId);
     Item weapon = items.get(itemId);
     target.takeDamage(weapon.getDamage());
 
@@ -200,7 +231,7 @@ public class World implements WorldModel {
     g.fillRect(0, 0, width, height);
 
     g.setColor(Color.LIGHT_GRAY);
-    for (Room r : spaces) {
+    for (Space r : spaces) {
       Rect rect = r.getArea();
       int x = rect.getUpperLeft().getCol() * cellSize;
       int y = rect.getUpperLeft().getRow() * cellSize;
@@ -211,18 +242,133 @@ public class World implements WorldModel {
       g.setColor(Color.BLACK);
       g.drawRect(x, y, w, h);
       g.drawString(r.getName(), x + 2, y + 12);
+      g.drawString(String.valueOf(r.getIndex()), x + 2, y + 24);
+    
     }
 
     g.dispose();
     return img;
   }
 
+  public List<Iplayer> getPlayers() {
+    return Collections.unmodifiableList(players);
+  }
+
+  @Override
+  public void addPlayer(String name, int startIdx, boolean isAi, int capacity) {
+    Objects.requireNonNull(name, "Player name cannot be null");
+    if (startIdx < 0 || startIdx >= spaces.size()) {
+      throw new IllegalArgumentException("Invalid starting index");
+    }
+    for (Iplayer p : players) {
+      if (p.getName().equalsIgnoreCase(name)) {
+        throw new IllegalArgumentException("Duplicate player name");
+      }
+    }
+    Iplayer player = isAi
+        ? new ComputerPlayer(name, startIdx, new ArrayList<Item>())
+        : new Player(name, startIdx, new ArrayList<Item>());
+    players.add(player);
+    
+  }
+
+  @Override
+  public String movePlayer(String name, String destination) {
+    Iplayer p = findPlayer(name);
+    if (p == null) {
+      throw new IllegalArgumentException("Player not found: " + name);
+    }
+    return p.move(destination, this);
+  }
+
+  @Override
+  public String pickUpItem(String name, String itemName) {
+    Iplayer p = findPlayer(name);
+    return p.pickUp(itemName, this);
+  }
+
+  @Override
+  public String lookAround(String name) {
+    Iplayer p = findPlayer(name);
+    return p.lookAround(this);
+  }
+
+  @Override
+  public String describePlayer(String name) {
+    Iplayer p = findPlayer(name);
+    Space current = spaces.get(p.getCurrentSpaceIndex());
+    StringBuilder sb = new StringBuilder();
+    sb.append("Player: ").append(p.getName())
+      .append(" (").append(p.isComputerControlled() ? "AI" : "Human").append(")\n")
+      .append("Current Space: ").append(current.getName()).append("\nItems: ");
+    if (p.getItems().isEmpty()) {
+      sb.append("None");
+    } else {
+      sb.append(p.getItems().stream().map(Item::getName).collect(Collectors.joining(", ")));
+    }
+    return sb.toString();
+  }
+
+  @Override
+  public void moveTarget() {
+    moveTargetNext();
+    
+  }
+
+  @Override
+  public String autoAction(String name) {
+    Iplayer p = findPlayer(name);
+    if (p == null) {
+      return "AI player not found: " + name;
+    }
+
+    int currentIdx = p.getCurrentSpaceIndex();
+    List<Integer> neighbors = neighborsOf(currentIdx);
+
+    // 50% chance to move, 50% to pick up (if available)
+    if (Math.random() < 0.5 && !neighbors.isEmpty()) {
+      int randomIdx = neighbors.get((int) (Math.random() * neighbors.size()));
+      String roomName = spaces.get(randomIdx).getName();
+      p.setCurrentSpaceIndex(randomIdx);
+      return name + " (AI) moved to " + roomName + ".";
+    } else {
+      // Try picking up an item from current room
+      for (Item it : items) {
+        if (it.getRoomIndex() == currentIdx) {
+          // Remove from room and add to player
+          p.addItem(it);
+          it.setRoomIndex(-1); // remove from world
+          return name + " (AI) picked up " + it.getName() + ".";
+        }
+      }
+      return name + " (AI) looked around but found nothing.";
+    }
+  }
+
+
+  @Override
+  public boolean isGameOver() {
+    return gameOver;
+  }
+
+  @Override
+  public void endGame() {
+    gameOver = true;
+    
+  }
+
+  @Override
+  public void saveWorldImage(String filename) throws IOException {
+    // TODO Auto-generated method stub
+    ;
+  }
+  
   // ---------- Internal Utilities ----------
 
   private Map<Integer, List<Integer>> computeNeighbors() {
     Map<Integer, List<Integer>> map = new HashMap<>();
     for (int i = 0; i < spaces.size(); i++) {
-      Room s1 = spaces.get(i);
+      Space s1 = spaces.get(i);
       Rect r1 = s1.getArea();
       List<Integer> adj = new ArrayList<>();
       for (int j = 0; j < spaces.size(); j++) {
@@ -250,11 +396,11 @@ public class World implements WorldModel {
     return map;
   }
 
-  private boolean isSeenByOthers(Player attacker) {
-    int attackerRoom = attacker.getCurrentSpaceIndex();
+  private boolean isSeenByOthers(Iplayer p2) {
+    int attackerRoom = p2.getCurrentSpaceIndex();
     Set<Integer> visibleRooms = visibleFrom(attackerRoom);
-    for (Player p : players) {
-      if (p == attacker) {
+    for (Iplayer p : players) {
+      if (p == p2) {
         continue;
       }
       if (visibleRooms.contains(p.getCurrentSpaceIndex())) {
@@ -263,20 +409,17 @@ public class World implements WorldModel {
     }
     return false;
   }
-
-  /**.
-   * Check null and add a player to the World
-   *
-   * @param p The player added
-   */
-  public void addPlayer(Player p) {
-    if (p == null) {
-      throw new IllegalArgumentException("Player cannot be null.");
-    }
-    players.add(p);
+  
+  private Iplayer findPlayer(String name) {
+    return players.stream()
+        .filter(p -> p.getName().equalsIgnoreCase(name))
+        .findFirst()
+        .orElseThrow(() -> new IllegalArgumentException("Player not found: " + name));
   }
 
-  public List<Player> getPlayers() {
-    return Collections.unmodifiableList(players);
+  @Override
+  public List<Item> getItems() {
+    return Collections.unmodifiableList(items);
   }
+
 }

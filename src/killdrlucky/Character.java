@@ -6,13 +6,15 @@ package killdrlucky;
  */
 public interface Character {
 
-  /**.
+  /**
+   * Gets the name of the character.
    *
    * @return the name of the character
    */
   String getName();
 
-  /**.
+  /**
+   * Returns the current space index where the player is located.
    *
    * @return the index of the room where the character currently is
    */

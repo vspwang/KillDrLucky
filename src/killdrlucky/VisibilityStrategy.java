@@ -19,5 +19,5 @@ public interface VisibilityStrategy {
    * @return a set of indices of spaces that are visible from the given space
    * @throws IllegalArgumentException if idx is invalid or spaces is null
    */
-  Set<Integer> visibleFrom(int idx, List<Room> spaces);
+  Set<Integer> visibleFrom(int idx, List<Space> spaces);
 }
