@@ -1,44 +1,42 @@
-# Kill Dr Lucky – Model Implementation
+# Kill Dr Lucky – Interactive MVC Implementation (Milestone 2)
 
 ## 1. Overview
 
-This project implements the **Model** component of the *Kill Doctor Lucky* game as part of the milestone submission.  
-The model provides a complete **in-memory representation** of the game world, designed to support both text-based and graphical extensions in future milestones.
+This milestone extends the Kill Doctor Lucky project into a fully interactive, modular, and testable system following the Model–View–Controller (MVC) architecture.
 
-### Core Functionalities
-The model implements all major requirements specified in the milestone:
-- **World representation:**  
-  Parsing a world specification file into structured objects (spaces, items, and target characters).  
-- **Spatial logic:**  
-  Room boundaries, neighbor detection, and overlap validation.  
-- **Descriptive queries:**  
-  Reporting visible spaces, items contained in each room, and detailed space descriptions.  
-- **Target movement:**  
-  Simulated stepwise traversal of the target character through the map.  
-- **Visibility and attack logic:**  
-  Determines whether the target can be seen or attacked from a given location.  
-- **Rendering:**  
-  Graphical visualization of the world map using `BufferedImage`.
+It introduces an interactive text-based controller, allowing users to play directly through the console, with both human-controlled and computer-controlled players taking alternating turns.
+Core gameplay now includes:
 
-As this milestone focuses solely on the **model layer**, no interactive controller or graphical user interface (GUI) is included.  
-A minimal **command-line driver** is provided to demonstrate and verify core functionalities.
+- **Adding players (human or AI)**  
+- **Moving between rooms**   
+- **Picking up items**  
+- **Looking around**   
+- **Displaying player and space information**   
+- **Automatic AI decision-making**  
+- **Generating and saving the world map as a PNG**
+- **Enforcing a maximum number of turns before the game ends**
 
 ---
 
-## 2. System Architecture
+## 2. Architecture Overview
 
-The project follows a **modular object-oriented design**, with clear separation between world structure, entity behavior, and parsing logic.
+### Layer Responsibilities
 
-### Key Packages and Classes
+| Layer          | Component                                                                     | Description                                                                                              |
+| -------------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| **Model**      | `World`, `Room`, `Item`, `Target`, `Player`, `ComputerPlayer`                 | Represents and updates the full game state. Implements `GameModelApi` and `WorldModel`.                  |
+| **Controller** | `GameController`                                                              | Handles command-line input/output, manages turns, executes player actions, and interacts with the model. |
+| **View**       | (Integrated in controller for now)                                            | Text-based console output; a graphical view will be added in a later milestone.                          |
+| **Utility**    | `WorldParser`, `Rect`, `Point`, `VisibilityStrategy`, `AxisAlignedVisibility` | Parsing and geometry utilities, determining visibility and adjacency of rooms.                           |
 
-| Component | Description |
-|------------|-------------|
-| **`World`** | The main entry point managing all entities and interactions within the game world. Provides APIs for querying, describing, and rendering. |
-| **`Room` / `Space`** | Represent physical areas of the map; each defined by upper-left and lower-right coordinates. Implements `Space` interface. |
-| **`Item`** | Represents objects located within rooms, each associated with a damage value. |
-| **`Target`** | The special non-player character (NPC) moving through the world according to a fixed path or rule set. |
-| **`Rect`** | Utility class encapsulating coordinate geometry for rooms, overlap checking, and adjacency computation. |
-| **`WorldParser`** | Responsible for reading the `.txt` world specification file, validating data integrity, and building a `WorldData` aggregate structure. |
+### Design Patterns Used
+- **Model–View–Controller (MVC)** – Separates logic (model) from user interaction (controller).
+
+- **Strategy Pattern** – Enables interchangeable visibility logic via VisibilityStrategy.
+
+- **Factory Pattern (WorldParser)** – Parses the world configuration file into a reusable WorldData structure.
+
+- **Facade Pattern** – GameModelApi abstracts the complexity of the underlying World model.
 
 ---
 
@@ -47,21 +45,21 @@ The project follows a **modular object-oriented design**, with clear separation 
 ### Command-Line Execution
 
 ```bash
-java -jar <spec-file> [--cell <int>] [--out <png>] [--space <idx>]
+java -jar <spec-file> <input-worldfile> <max-turns>
 ```
 
 ### Example:
 ```bash
-java -jar res/KillDrLucky.jar res/ArrakisPalace.txt --cell 25 --out res/ArrakisPalace.png --space 5 > res/run_basics.txt
+java -jar KillDrLucky.jar res/mansion.txt 10
+
 ```
 
 ```
-| Argument        | Description                                                                | Default     |
-| --------------- | -------------------------------------------------------------------------- | ----------- |
-| `<spec-file>`   | Path to the world specification text file (e.g., `mansion.txt`).           | *Required*  |
-| `--cell <int>`  | Cell size in pixels for rendering the map. Larger = higher resolution.     | `20`        |
-| `--out <path>`  | Path to save the generated map image.                                      | `world.png` |
-| `--space <idx>` | Index of the space to demonstrate (`describeSpace()` and `neighborsOf()`). | `0`         |
+| Argument          | Description                                                 |
+| ----------------- | ----------------------------------------------------------- |
+| `res/mansion.txt` | Path to the world file parsed by `WorldParser`.             |
+| `10`              | Maximum number of turns before the game automatically ends. |
+
 ```
 
 ## 4. Example Run
@@ -69,26 +67,44 @@ java -jar res/KillDrLucky.jar res/ArrakisPalace.txt --cell 25 --out res/ArrakisP
 File: res/run_basics.txt
 
 ### Purpose:
-Demonstrates all functionalities required for the model milestone, including:
+This run shows:
 
-- Successful world parsing and validation
+- Adding a human-controlled player
 
-- Space description and adjacency detection
+- Adding a computer-controlled player
 
-- Target character initialization and movement
+- Human player moving, picking up an item, and looking around
 
-- Rendering to PNG image
+- AI player performing automatic random actions
 
-- Correct console output for the requested space and neighbor list
+- Alternating turns between players
+
+- Displaying player and room descriptions
+
+- Saving the world map as world_map.png
+
+- Ending the game automatically after the turn limit
 
 ### Comand Used:
 ```
-java -jar res/KillDrLucky.jar res/ArrakisPalace.txt --cell 25 --out res/ArrakisPalace.png --space 5 > res/run_basics.txt
+java -jar KillDrLucky.jar res/mansion.txt 10 > res/run_basics.txt
+
 ```
 
 ### Output Files Generated:
 - res/run_basics.txt — textual demonstration log
-- res/ArrakisPalace.png — visual map output
+- res/WorldMap.png — visual map output
 
-This example run shows a complete execution of the model using the ArrakisPalace.txt world specification file.
+
+## References
+8. References
+
+The following references were used during the design and implementation of this milestone:
+
+- Java SE 17 API Documentation – consulted for classes such as List, Path, and BufferedReader.
+
+- YouTube tutorials – used to better understand turn-based game logic and command-line input handling in Java.
+
+- Creative Design Inspiration – the world, room, and item names were partially inspired by Frank Herbert’s Dune to create a thematic consistency.
+
 
