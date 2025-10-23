@@ -97,7 +97,6 @@ java -jar KillDrLucky.jar res/mansion.txt 10 > res/run_basics.txt
 
 
 ## References
-8. References
 
 The following references were used during the design and implementation of this milestone:
 
