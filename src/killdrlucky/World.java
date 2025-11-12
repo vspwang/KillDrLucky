@@ -266,8 +266,8 @@ public class World implements WorldModel, GameModelApi {
       }
     }
     Iplayer player = isAi
-        ? new ComputerPlayer(name, startIdx, new ArrayList<Item>())
-        : new Player(name, startIdx, new ArrayList<Item>());
+        ? new ComputerPlayer(name, startIdx, capacity)
+        : new Player(name, startIdx, capacity);
     players.add(player);
     
   }

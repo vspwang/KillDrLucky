@@ -16,30 +16,29 @@ public class Player implements Iplayer {
   private final String name;
   private int currentSpaceIndex;
   private final List<Item> items;
+  private final int maxCapacity;
 
   /**
    * Constructs a Player.
    *
    * @param name       the player's name
    * @param startIndex the starting room index
-   * @param items      the initial list of items (can be empty, but not null)
+   * @param maxCap     the max capacity of a player's inventory
    * @throws IllegalArgumentException if name is null/blank or index < 0 or items
    *                                  == null
    */
-  public Player(String name, int startIndex, List<Item> items) {
+  public Player(String name, int startIndex, int maxCap) {
     if (name == null || name.isBlank()) {
       throw new IllegalArgumentException("Player name cannot be null or blank.");
     }
     if (startIndex < 0) {
       throw new IllegalArgumentException("Room index must be non-negative.");
     }
-    if (items == null) {
-      throw new IllegalArgumentException("Item list cannot be null.");
-    }
+    this.maxCapacity = maxCap;
 
     this.name = name;
     this.currentSpaceIndex = startIndex;
-    this.items = new ArrayList<>(items); 
+    this.items = new ArrayList<>();
   }
 
   @Override
@@ -59,7 +58,7 @@ public class Player implements Iplayer {
     }
     this.currentSpaceIndex = idx;
   }
-  
+
   @Override
   public List<Item> getItems() {
     return Collections.unmodifiableList(new ArrayList<>(items));
@@ -70,15 +69,22 @@ public class Player implements Iplayer {
     if (item == null) {
       throw new IllegalArgumentException("Cannot add a null item.");
     }
+    if (items.size() >= maxCapacity) {
+      throw new IllegalStateException("Cannot carry more items. Max capacity: " + maxCapacity);
+    }
     items.add(item);
   }
-  
+
   @Override
   public void removeItem(Item item) {
     if (item == null) {
       throw new IllegalArgumentException("Cannot remove a null item.");
     }
     items.remove(item);
+  }
+  
+  public int getMaxCapacity() {
+    return maxCapacity;
   }
 
   @Override
@@ -148,7 +154,6 @@ public class Player implements Iplayer {
       return "No neighboring space named '" + destination + "'.";
     }
   }
-
 
   @Override
   public String pickUp(String itemName, GameModelApi model) {

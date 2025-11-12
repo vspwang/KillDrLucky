@@ -13,10 +13,10 @@ public class ComputerPlayer extends Player {
    *
    * @param name       the player's unique name; must not be null or empty
    * @param startIndex the index of the space where the player starts
-   * @param items      the maximum number of items the player can carry
+   * @param maxCap     the max capacity of a player's inventory
    */
-  public ComputerPlayer(String name, int startIndex, List<Item> items) {
-    super(name, startIndex, items);
+  public ComputerPlayer(String name, int startIndex, int maxCap) {
+    super(name, startIndex, maxCap);
   }
 
   @Override
