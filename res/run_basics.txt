@@ -1,196 +1,258 @@
 Map image saved to: /Users/yuliaw/CS5010/KillDrLucky/world_map.png
-Welcome to Kill Doctor Lucky!
+╔════════════════════════════════════════╗
+║     KILL DOCTOR LUCKY GAME             ║
+╚════════════════════════════════════════╝
+
 Type 'help' for command list.
-1
 
-No players yet. Use: add <name> <startIndex> <isAi>
-> Please add at least one player before starting.
-add human1 1 false
+═══════════════════════════════════════
+         SETUP PHASE
+═══════════════════════════════════════
+Add players using: add <name> <startIndex> <isAI> <capacity>
+Examples:
+  add Player 0 false 5     (human player)
+  add Bot 1 true 5        (AI player)
+Type 'start' when ready to begin.
 
-> Added player human1 (AI: false) at space 1
+> Added human player: Alice at space 0 (capacity: 5)
+> Added human player: Bob at space 1 (capacity: 5)
+> Added computer player: AIBot at space 8 (capacity: 5)
+> 
+╔════════════════════════════════════════╗
+║          GAME START!                   ║
+╚════════════════════════════════════════╝
 
-Players added. Game begins!
-1
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Turn 1 | Player: Alice
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
---- Turn 1 ---
-Current player: human1
-Enter command (help for list): add bot 2 true
-Added player bot (AI: true) at space 2
-1
+╔════════════════════════════════════╗
+║ Player: Alice                      ║
+╚════════════════════════════════════╝
+Type: Human
+Location: Armory [index: 0]
+Inventory: 0/5 items
+  (empty)
+Target location: Armory
 
---- Turn 1 ---
-Current player: human1
-Enter command (help for list): describe human1
-Player: human1 (Human)
-Current Space: Billiard Room
-Items: None
-1
+Enter command (or 'help'): ═══════════════════════════════════
+Looking around from: Armory
+═══════════════════════════════════
 
---- Turn 1 ---
-Current player: human1
-Enter command (help for list): space Billiard Room
-Room: Billiard Room
-Items: Billiard Cue(2) 
-Visible from here: Armory Trophy Room Dining Hall 
-Neighbors: Armory Dining Hall Trophy Room
-1
+Items here: Revolver (3)
+Doctor Lucky is here! (Health: 2)
+  🐾 Fortune the Cat is here!
 
---- Turn 1 ---
-Current player: human1
-Enter command (help for list): look human1
-You are in Billiard Room.
-Items: Billiard Cue(2) 
-You can see: Armory Trophy Room Dining Hall
+Neighboring Spaces:
+  • Billiard Room [1]:
+    Items: Billiard Cue, Players: Bob
+  • Dining Hall [3]: (empty)
+  • Drawing Room [4]:
+    Items: Letter Opener
 
---- Turn 1 ---
-Current player: human1
-Enter command (help for list): pickup human1 Billiard Cue
-human1 picked up Billiard Cue.
-1
+→ Target moved to: Billiard Room
+🐾 Fortune the Cat wandered to: Billiard Room
 
---- Turn 2 ---
-Current player: bot
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Turn 2 | Player: Bob
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-==============================
- AI Turn — bot
-==============================
-Before action:
-Player: bot (AI)
-Current Space: Carriage House
-Items: None
-[AI Action] bot (AI) moved to Winter Garden.
-After action:
-Player: bot (AI)
-Current Space: Winter Garden
-Items: None
-1
+╔════════════════════════════════════╗
+║ Player: Bob                        ║
+╚════════════════════════════════════╝
+Type: Human
+Location: Billiard Room [index: 1]
+Inventory: 0/5 items
+  (empty)
+Target location: Billiard Room
 
+Enter command (or 'help'): DEBUG: Parsed space name: [Armory]
+╔══════════════════════════════════════╗
+║ Room: Armory                         ║
+║ Index: 0                             ║
+╚══════════════════════════════════════╝
 
---- Turn 3 ---
-Current player: human1
-Enter command (help for list): move human1 Dining Hall
-human1 moved to Dining Hall
-q
+Players: Alice (Human)
 
---- Turn 4 ---
-Current player: bot
+Items: Revolver(3) 
+️Visible spaces: Dining Hall, Drawing Room, Green House, Piazza
+Neighbors: Billiard Room [1], Dining Hall [3], Drawing Room [4]
 
-==============================
- AI Turn — bot
-==============================
-Before action:
-Player: bot (AI)
-Current Space: Winter Garden
-Items: None
-[AI Action] bot (AI) looked around but found nothing.
-After action:
-Player: bot (AI)
-Current Space: Winter Garden
-Items: None
-1
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Turn 2 | Player: Bob
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
---- Turn 5 ---
-Current player: human1
-Enter command (help for list): space Dining Hall
-Room: Dining Hall
-Items: none
-Visible from here: Armory Billiard Room Tennessee Room Trophy Room Wine Cellar Drawing Room Kitchen Parlor 
-Neighbors: Armory Billiard Room Drawing Room Kitchen Parlor Tennessee Room Trophy Room Wine Cellar
-a
+╔════════════════════════════════════╗
+║ Player: Bob                        ║
+╚════════════════════════════════════╝
+Type: Human
+Location: Billiard Room [index: 1]
+Inventory: 0/5 items
+  (empty)
+Target location: Billiard Room
 
---- Turn 5 ---
-Current player: human1
-Enter command (help for list): move human1 Trophy Room
-human1 moved to Trophy Room
-1
+Enter command (or 'help'): 🐾 Moved Fortune the Cat from Billiard Room to Billiard Room
 
---- Turn 6 ---
-Current player: bot
+→ Target moved to: Carriage House
+🐾 Fortune the Cat wandered to: Armory
 
-==============================
- AI Turn — bot
-==============================
-Before action:
-Player: bot (AI)
-Current Space: Winter Garden
-Items: None
-[AI Action] bot (AI) moved to Piazza.
-After action:
-Player: bot (AI)
-Current Space: Piazza
-Items: None
-1
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Turn 3 | Player: AIBot (AI)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+╔════════════════════════════════════╗
+║ Player: AIBot                      ║
+╚════════════════════════════════════╝
+Type: Computer (AI)
+Location: Kitchen [index: 8]
+Inventory: 0/5 items
+  (empty)
+Target location: Carriage House
 
---- Turn 7 ---
-Current player: human1
-Enter command (help for list): help
+[AI] AIBot picked up Crepe Pan (damage: 3)
 
-Available commands:
-add <name> <startIndex> <isAi>   - Add player (AI or human)
-move <name> <direction>          - Move the player
-pickup <name> <itemName>         - Pick up an item in same room
-look <name>                      - Look around current room
-describe <name>                  - Describe player
-space <roomName>                 - Describe room
-save <filename>                  - Save world image (mock)
-quit                             - End the game
-pickup human Monkey Hand
+→ Target moved to: Dining Hall
+🐾 Fortune the Cat wandered to: Drawing Room
 
---- Turn 7 ---
-Current player: human1
-Enter command (help for list): s
-Unknown command. Type 'help' for available options.
-move human1 kitechen
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Turn 4 | Player: Alice
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
---- Turn 7 ---
-Current player: human1
-Enter command (help for list): move human1 kitchen
-No neighboring space named 'kitchen'.
-1
+╔════════════════════════════════════╗
+║ Player: Alice                      ║
+╚════════════════════════════════════╝
+Type: Human
+Location: Armory [index: 0]
+Inventory: 0/5 items
+  (empty)
+Target location: Dining Hall
 
---- Turn 8 ---
-Current player: bot
+Enter command (or 'help'): ═══════════════════════════════════
+Looking around from: Armory
+═══════════════════════════════════
 
-==============================
- AI Turn — bot
-==============================
-Before action:
-Player: bot (AI)
-Current Space: Piazza
-Items: None
-[AI Action] bot (AI) moved to Foyer.
-After action:
-Player: bot (AI)
-Current Space: Foyer
-Items: None
+Items here: Revolver (3)
 
-1
+Neighboring Spaces:
+  • Billiard Room [1]:
+    Items: Billiard Cue, Players: Bob
+  • Dining Hall [3]:
+    Target: Doctor Lucky
+  • Drawing Room [4] - Cannot see inside (pet is blocking view)
 
+→ Target moved to: Drawing Room
+🐾 Fortune the Cat wandered to: Foyer
 
---- Turn 9 ---
-Current player: human1
-Enter command (help for list): move human1 Library
-human1 moved to Library
-1
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Turn 5 | Player: Bob
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
---- Turn 10 ---
-Current player: bot
+╔════════════════════════════════════╗
+║ Player: Bob                        ║
+╚════════════════════════════════════╝
+Type: Human
+Location: Billiard Room [index: 1]
+Inventory: 0/5 items
+  (empty)
+Target location: Drawing Room
 
-==============================
- AI Turn — bot
-==============================
-Before action:
-Player: bot (AI)
-Current Space: Foyer
-Items: None
-[AI Action] bot (AI) moved to Piazza.
-After action:
-Player: bot (AI)
-Current Space: Piazza
-Items: None
-1
+Enter command (or 'help'): Alice moved to Drawing Room
 
-Game over! Turns played: 10
-(Reached maximum number of turns)
+→ Target moved to: Foyer
+🐾 Fortune the Cat wandered to: Piazza
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Turn 6 | Player: AIBot (AI)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+╔════════════════════════════════════╗
+║ Player: AIBot                      ║
+╚════════════════════════════════════╝
+Type: Computer (AI)
+Location: Kitchen [index: 8]
+Inventory: 1/5 items
+  • Crepe Pan (damage: 3)
+Target location: Foyer
+
+[AI] AIBot picked up Sharp Knife (damage: 3)
+
+→ Target moved to: Green House
+🐾 Fortune the Cat wandered to: Hedge Maze
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Turn 7 | Player: Alice
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+╔════════════════════════════════════╗
+║ Player: Alice                      ║
+╚════════════════════════════════════╝
+Type: Human
+Location: Drawing Room [index: 4]
+Inventory: 0/5 items
+  (empty)
+Target location: Green House
+
+Enter command (or 'help'): ═══════════════════════════════════
+Looking around from: Drawing Room
+═══════════════════════════════════
+
+Items here: Letter Opener (2)
+
+Neighboring Spaces:
+  • Armory [0]:
+    Items: Revolver
+  • Dining Hall [3]: (empty)
+  • Foyer [5]: (empty)
+  • Wine Cellar [19]:
+    Items: Rat Poison, Piece of Rope
+
+→ Target moved to: Hedge Maze
+🐾 Fortune the Cat wandered to: Green House
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Turn 8 | Player: Bob
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+╔════════════════════════════════════╗
+║ Player: Bob                        ║
+╚════════════════════════════════════╝
+Type: Human
+Location: Billiard Room [index: 1]
+Inventory: 0/5 items
+  (empty)
+Target location: Hedge Maze
+
+Enter command (or 'help'): Alice moved to Foyer
+
+→ Target moved to: Kitchen
+🐾 Fortune the Cat wandered to: Hedge Maze
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Turn 9 | Player: AIBot (AI)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+╔════════════════════════════════════╗
+║ Player: AIBot                      ║
+╚════════════════════════════════════╝
+Type: Computer (AI)
+Location: Kitchen [index: 8]
+Inventory: 2/5 items
+  • Crepe Pan (damage: 3)
+  • Sharp Knife (damage: 3)
+Target location: Kitchen
+
+AIBot WINS! 
+AIBot killed Doctor Lucky with Crepe Pan for 3 damage!
+The target is dead!
+
+→ Target moved to: Lancaster Room
+🐾 Fortune the Cat wandered to: Winter Garden
+
+╔════════════════════════════════════════╗
+║         GAME OVER                      ║
+╚════════════════════════════════════════╝
+
+Turns played: 9
+Target eliminated! 
+
 Thank you for playing!

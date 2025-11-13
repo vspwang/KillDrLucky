@@ -329,7 +329,7 @@ public class GameController implements Controller {
   @Override
   public void playGame() throws IOException {
     out.append("╔════════════════════════════════════════╗\n");
-    out.append("║     KILL DOCTOR LUCKY GAME            ║\n");
+    out.append("║     KILL DOCTOR LUCKY GAME             ║\n");
     out.append("╚════════════════════════════════════════╝\n\n");
     out.append("Type 'help' for command list.\n\n");
 
@@ -376,8 +376,8 @@ public class GameController implements Controller {
     out.append("═══════════════════════════════════════\n");
     out.append("Add players using: add <name> <startIndex> <isAI> <capacity>\n");
     out.append("Examples:\n");
-    out.append("  add Alice 0 false 3     (human player)\n");
-    out.append("  add Bot 5 true 5        (AI player)\n");
+    out.append("  add Player 0 false 5     (human player)\n");
+    out.append("  add Bot 1 true 5        (AI player)\n");
     out.append("Type 'start' when ready to begin.\n\n");
 
     while (scan.hasNextLine()) {
