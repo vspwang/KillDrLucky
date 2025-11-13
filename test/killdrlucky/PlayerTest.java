@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,14 +14,17 @@ import org.junit.jupiter.api.Test;
  */
 public class PlayerTest {
 
-  private World world;
   private Player player;
 
+  /**
+   * Sets up the test environment before each test.
+   *
+   * @throws IOException if there's an error reading the world file
+   */
   @BeforeEach
   void setup() throws IOException {
     WorldParser parser = new WorldParser();
     WorldParser.WorldData data = parser.parse(Path.of("res/mansion.txt"));
-    world = new World(data, new AxisAlignedVisibility());
     player = new Player("Alice", 0, 10);
   }
 

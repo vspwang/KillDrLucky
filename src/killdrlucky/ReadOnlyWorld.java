@@ -9,25 +9,29 @@ import java.util.Set;
  */
 public interface ReadOnlyWorld {
 
-  /**.
+  /**
+   * Returns the name of the world.
    *
    * @return the name of the world
    */
   String getWorldName();
 
-  /**.
+  /**
+   * Returns the total number of rows in the world grid.
    *
    * @return total number of rows in the world grid
    */
   int getRows();
 
-  /**.
+  /**
+   * Returns the total number of cols in the world grid.
    *
-   * @return total number of columns in the world grid
+   * @return total number of rows in the world grid
    */
   int getCols();
 
-  /**.
+  /**
+   * Returns the list of spaces in the world.
    *
    * @return a read-only list of all spaces (rooms) in the world
    */
@@ -42,7 +46,8 @@ public interface ReadOnlyWorld {
    */
   Space getSpace(int idx);
 
-  /**.
+  /**
+   * Returns the target of the world.
    *
    * @return the target character (Dr Lucky)
    */

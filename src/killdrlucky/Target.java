@@ -54,7 +54,8 @@ public class Target implements Character {
     this.currentSpaceIndex = idx;
   }
 
-  /**.
+  /**
+   * Gets the current health of the target.
    *
    * @return the current health of the target
    */
@@ -62,10 +63,8 @@ public class Target implements Character {
     return health;
   }
 
-  /**.
-   * Sets a new health value. 
-   *
-   * @param h new target health
+  /**
+   * Sets the current health of the target.
    */
   public void setHealth(int h) {
     if (h < 0) {
@@ -74,7 +73,7 @@ public class Target implements Character {
     this.health = h;
   }
 
-  /**.
+  /**
    * Applies damage to the target, not letting health go below zero. 
    *
    * @param amount damage amount
@@ -86,9 +85,10 @@ public class Target implements Character {
     health = Math.max(0, health - amount);
   }
 
-  /**.
+  /**
+   * Checks if the target is still alive.
    *
-   * @return true if the target is still alive (health > 0)
+   * @return true if the target is still alive (health greater than 0), false otherwise
    */
   public boolean isAlive() {
     return health > 0;

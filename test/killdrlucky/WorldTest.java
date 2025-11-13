@@ -26,6 +26,11 @@ public class WorldTest {
 
   private World world;
 
+  /**
+   * Sets up the test environment before each test.
+   *
+   * @throws IOException if there's an error reading the world file
+   */
   @BeforeEach
   void setup() throws IOException {
     // Build world from sample parser data (using a small test map)

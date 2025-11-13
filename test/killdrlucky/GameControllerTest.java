@@ -18,6 +18,11 @@ public class GameControllerTest {
 
   private World world;
 
+  /**
+   * Sets up the test environment before each test.
+   *
+   * @throws IOException if there's an error reading the world file
+   */
   @BeforeEach
   void setup() throws IOException {
     WorldParser parser = new WorldParser();

@@ -388,13 +388,13 @@ public class GameController implements Controller {
         continue;
       }
 
-      if (input.equalsIgnoreCase("start")) {
+      if ("start".equalsIgnoreCase(input)) {
         if (model.getPlayers().isEmpty()) {
           out.append("Add at least one player before starting!\n");
         } else {
           break;
         }
-      } else if (input.equalsIgnoreCase("help")) {
+      } else if ("help".equalsIgnoreCase(input)) {
         printHelp();
       } else {
         // Use command pattern even in setup phase
@@ -476,7 +476,7 @@ public class GameController implements Controller {
         out.append(String.format("\n→ Target moved to: %s\n",
                                 model.getSpace(model.getTarget().getCurrentSpaceIndex())
                                     .getName()));
-        //EXTRA CREDIT: Move pet with DFS traversal
+        // EXTRA CREDIT: Move pet with DFS traversal
         int oldPetLocation = model.getPet().getCurrentSpaceIndex();
         model.movePetDfs();
         int newPetLocation = model.getPet().getCurrentSpaceIndex();
@@ -568,7 +568,7 @@ public class GameController implements Controller {
     } catch (IllegalArgumentException e) {
       out.append("Error: ").append(e.getMessage()).append("\n");
       return false;
-    } catch (Exception e) {
+    } catch (IOException e) {
       out.append("Unexpected error: ").append(e.getMessage()).append("\n");
       return false;
     }

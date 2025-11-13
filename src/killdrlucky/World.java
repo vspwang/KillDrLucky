@@ -453,6 +453,11 @@ public class World implements WorldModel, GameModelApi {
     return AttackStatus.SUCCESS;
   }
 
+  /**
+   * Returns a defensive copy of list of players.
+   *
+   * @return defensive copy of list of players
+   */
   public List<Iplayer> getPlayers() {
     return Collections.unmodifiableList(players);
   }
@@ -835,6 +840,12 @@ public class World implements WorldModel, GameModelApi {
     return map;
   }
 
+  /**
+   * Checks if a player is seen by other players.
+   *
+   * @param player the player to check
+   * @return true if the player is seen by others, false otherwise
+   */
   private boolean isSeenByOthers(Iplayer player) {
     int playerSpace = player.getCurrentSpaceIndex();
     Set<Integer> visibleSpaces = visibleFrom(playerSpace);

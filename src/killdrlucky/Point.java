@@ -10,7 +10,9 @@ public final class Point {
   private final int row;
   private final int col;
   
-  /**.
+  /**
+   *
+   * Constructs a Point with the given coordinates.
    *
    * @param row row index
    * @param col col index
@@ -24,10 +26,20 @@ public final class Point {
     
   }
   
+  /**
+   * Gets the row coordinate.
+   *
+   * @return the row index
+   */
   public int getRow() {
     return this.row;
   }
   
+  /**
+   * Gets the column coordinate.
+   *
+   * @return the column index
+   */
   public int getCol() {
     return this.col;
   }

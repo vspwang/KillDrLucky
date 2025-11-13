@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**.
- * Room class implemented Space for single room
+/**
+ * Room class implemented Space for single room.
  */
 public class Room implements Space {
 
@@ -14,8 +14,8 @@ public class Room implements Space {
   private final Rect area;
   private final List<Item> items;
 
-  /**.
-   * Creating a new room with following parameters:
+  /**
+   * Creating a new room with following parameters.
    *
    * @param index room Index
    * @param name room Name

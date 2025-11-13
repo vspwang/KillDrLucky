@@ -2,15 +2,16 @@ package killdrlucky;
 
 import java.util.Objects;
 
-/**.
- * Represent a rectangle by 2 Points: ul - upper left, lr - lower right
+/**
+ * Represent a rectangle by 2 Points: ul - upper left, lr - lower right.
  */
 public class Rect {
   
   private final Point ul;
   private final Point lr;
   
-  /**.
+  /**
+   * Constructs a Rect with the given corner points.
    *
    * @param ul upper left Point
    * @param lr lower right Point
@@ -27,34 +28,47 @@ public class Rect {
     
   }
   
+  /**
+   * Gets the upper left point.
+   *
+   * @return the upper left corner
+   */
   public Point getUpperLeft() {
     return ul;
   }
   
+  /**
+   * Gets the lower right point.
+   *
+   * @return the lower right corner
+   */
   public Point getLowerRight() {
     return lr;
   }
   
-  /**.
+  /**
+   * Calculates the width of this rectangle.
    *
-   * @return returning the width of Rect
+   * @return the width of the Rect
    */
   public int width() {
     return lr.getCol() - ul.getCol() + 1;
   }
   
-  /**.
+  /**
+   * Calculates the height of this rectangle.
    *
-   * @return returning the height of Rect
+   * @return the height of the Rect
    */
   public int height() {
     return lr.getRow() - ul.getRow() + 1;
   }
   
-  /**.
+  /**
+   * Checks if a point is contained within this rectangle.
    *
    * @param p the Point to be checked
-   * @return returning if it's contained in the Rect
+   * @return true if the point is contained in the Rect, false otherwise
    */
   public boolean contains(Point p) {
     if (p == null) {
@@ -64,10 +78,11 @@ public class Rect {
         && p.getRow() >= ul.getRow() && p.getRow() <= lr.getRow();
   }
   
-  /**.
+  /**
+   * Checks if there is overlap with another rectangle.
    *
    * @param r the Rect to be checked
-   * @return returning if there is overlap with this Rect
+   * @return true if there is overlap with this Rect, false otherwise
    */
   public boolean intersects(Rect r) {
     // intersects: true only when there is positive-area overlap.

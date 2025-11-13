@@ -16,25 +16,6 @@ public class ComputerPlayer extends Player {
   public ComputerPlayer(String name, int startIndex, int maxCap) {
     super(name, startIndex, maxCap);
   }
-
-//  @Override
-//  public String move(String destination, GameModelApi model) {
-//    // For computer players, delegate to the model's autoAction
-//    if (model == null) {
-//      throw new IllegalArgumentException("Model cannot be null");
-//    }
-//    return model.autoAction(this.getName());
-//  }
-//
-//  @Override
-//  public String pickUp(String itemName, GameModelApi model) {
-//    return "Computer-controlled players act automatically.";
-//  }
-//
-//  @Override
-//  public String lookAround(GameModelApi model) {
-//    return "Computer-controlled players act automatically.";
-//  }
   
   @Override
   public boolean isComputerControlled() {

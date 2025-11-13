@@ -39,7 +39,7 @@ public class PickUpCommand implements Command {
   public String execute() {
     try {
       return model.pickUpItem(playerName, itemName);
-    } catch (Exception e) {
+    } catch (IllegalArgumentException | IllegalStateException e) {
       return "Error picking up item: " + e.getMessage();
     }
   }

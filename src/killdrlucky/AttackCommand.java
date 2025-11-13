@@ -38,7 +38,7 @@ public class AttackCommand implements Command {
   public String execute() {
     try {
       return model.attackTarget(playerName, itemName);
-    } catch (Exception e) {
+    } catch (IllegalArgumentException | IllegalStateException e) {
       return "✗ Error: " + e.getMessage();
     }
   }

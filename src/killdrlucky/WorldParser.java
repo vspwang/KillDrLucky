@@ -33,7 +33,7 @@ public class WorldParser {
     public final Pet pet;
 
     /**
-     * .
+     * Constructs a WorldData object.
      *
      * @param worldName Name of the World
      * @param rows      Numbers of Row
@@ -41,6 +41,7 @@ public class WorldParser {
      * @param rooms     List of Room
      * @param items     List of Item
      * @param target    Target for this World
+     * @param pet       Pet for this World
      */
 
     public WorldData(String worldName, int rows, int cols, List<Room> rooms, List<Item> items,
@@ -56,10 +57,11 @@ public class WorldParser {
   }
 
   /**
-   * . Parse from a file path.
+   * Parses world data from a file path.
    *
    * @param path file path
-   * @return parse(Reader)
+   * @return parsed WorldData object
+   * @throws IOException if there's an error reading the file
    */
   public WorldData parse(Path path) throws IOException {
     try (BufferedReader br = Files.newBufferedReader(path)) {
@@ -68,10 +70,11 @@ public class WorldParser {
   }
 
   /**
-   * . Parse from any Reader.
+   * Parses world data from any Reader.
    *
    * @param reader input stream
-   * @return parsed data into a WorldDara object
+   * @return parsed data into a WorldData object
+   * @throws IOException if there's an error reading from the reader
    */
   public WorldData parse(Reader reader) throws IOException {
     BufferedReader br = new BufferedReader(reader);

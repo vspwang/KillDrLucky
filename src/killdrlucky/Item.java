@@ -6,28 +6,31 @@ package killdrlucky;
  */
 public interface Item {
 
-  /**.
+  /**
+   * Returns the name of the item.
    *
    * @return the name of the item
-   * 
    */
   String getName();
 
-  /**.
+  /**
+   * Returns the amount of damage this item can deal.
    *
    * @return the amount of damage this item can deal
    */
   int getDamage();
 
-  /**.
+  /**
+   * Returns the index of the room that contains this item.
    *
    * @return the index of the room that contains this item
    */
   int getRoomIndex();
 
-  /**.
-  *
-  * @param i set room index of this item
-  */
+  /**
+   * Sets the room index of this item.
+   *
+   * @param i the new room index
+   */
   void setRoomIndex(int i);
 }
