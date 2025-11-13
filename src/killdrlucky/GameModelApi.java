@@ -125,6 +125,43 @@ public interface GameModelApi extends ReadOnlyWorld {
    * @return a rendered BufferedImage representing the world
    */
   BufferedImage renderBufferedImage(int cellSize);
+  
+  /**
+   * Attempts to attack the target character.
+   * 
+   * <p>The attack can use an item from the player's inventory or
+   * "poke in the eye" for 1 damage if itemName is null or empty.
+   * 
+   * <p>The attack only succeeds if:
+   * <ul>
+   *   <li>The player is in the same space as the target</li>
+   *   <li>The player is not seen by any other player</li>
+   * </ul>
+   *
+   * @param playerName the name of the attacking player
+   * @param itemName the name of the item to use, or null/"" to poke in the eye
+   * @return a message describing the result of the attack
+   * @throws IllegalArgumentException if player is not found
+   */
+  String attackTarget(String playerName, String itemName);
+
+  /**
+   * Moves the pet to the specified space.
+   * 
+   * <p>The pet makes the space it occupies invisible to neighbors.
+   *
+   * @param spaceName the name of the destination space
+   * @return a message describing the result
+   * @throws IllegalArgumentException if space is not found
+   */
+  String movePet(String spaceName);
+
+  /**
+   * Gets the pet character.
+   *
+   * @return the pet
+   */
+  Pet getPet();
 
 
 }

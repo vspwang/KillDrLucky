@@ -48,31 +48,6 @@ public interface Iplayer extends Character {
    * @return the number of items in inventory
    */
   int getCurrentCapacity();
-//  /**
-//   * Performs a move action in the specified direction.
-//   *
-//   * @param direction the direction to move (e.g., "north", "east")
-//   * @param model     the active game model context
-//   * @return textual result or description of the move
-//   */
-//  String move(String direction, GameModelApi model);
-//
-//  /**
-//   * Performs a pick-up action for an item in the current space.
-//   *
-//   * @param itemName the name of the item to pick up
-//   * @param model    the active game model context
-//   * @return textual result of the pickup action
-//   */
-//  String pickUp(String itemName, GameModelApi model);
-//
-//  /**
-//   * Allows the player to look around from the current space.
-//   *
-//   * @param model the active game model context
-//   * @return description of visible spaces and contents
-//   */
-//  String lookAround(GameModelApi model);
 
   /**
    * Checks if the player can carry more items.

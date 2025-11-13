@@ -63,6 +63,8 @@ public class GameController implements Controller {
     commandFactory.put("describe", this::createDescribePlayerCommand);
     commandFactory.put("space", this::createDescribeSpaceCommand);
     commandFactory.put("save", this::createSaveImageCommand);
+    commandFactory.put("attack", this::createAttackCommand);
+    commandFactory.put("movepet", this::createMovePetCommand);
   }
 
   /**
@@ -259,6 +261,58 @@ public class GameController implements Controller {
         return "SaveImageCommand[filename=" + filename + "]";
       }
     };
+  }
+  
+  /**
+   * Factory method for creating AttackCommand from user input.
+   * 
+   * <p>Expected format: attack &lt;playerName&gt; [itemName]
+   *
+   * <p>Examples:
+   * <ul>
+   *   <li>attack Alice Knife</li>
+   *   <li>attack Bob (poke in the eye)</li>
+   * </ul>
+   *
+   * @param parser the scanner containing command parameters
+   * @return a new AttackCommand
+   * @throws IllegalArgumentException if input format is invalid
+   */
+  private Command createAttackCommand(Scanner parser) {
+    if (!parser.hasNext()) {
+      throw new IllegalArgumentException("Usage: attack <player> [item]");
+    }
+    
+    String playerName = parser.next();
+    String itemName = parser.hasNextLine() ? parser.nextLine().trim() : "";
+    
+    // Empty itemName means "poke in the eye"
+    if (itemName.isEmpty()) {
+      itemName = null;
+    }
+    
+    return new AttackCommand(model, playerName, itemName);
+  }
+
+  /**
+   * Factory method for creating MovePetCommand from user input.
+   * 
+   * <p>Expected format: movepet &lt;spaceName&gt;
+   *
+   * <p>Example: movepet Kitchen
+   *
+   * @param parser the scanner containing command parameters
+   * @return a new MovePetCommand
+   * @throws IllegalArgumentException if input format is invalid
+   */
+  private Command createMovePetCommand(Scanner parser) {
+    String spaceName = parser.hasNextLine() ? parser.nextLine().trim() : "";
+    
+    if (spaceName.isEmpty()) {
+      throw new IllegalArgumentException("Usage: movepet <roomName>");
+    }
+    
+    return new MovePetCommand(model, spaceName);
   }
 
   /**
@@ -538,6 +592,8 @@ public class GameController implements Controller {
         ║   move <player> <destination>  - Move to neighbor space  ║
         ║   pickup <player> <item>       - Pick up an item         ║
         ║   look <player>                - Look around             ║
+        ║   attack <player> [item]       - Attack the target       ║
+        ║   movepet <roomName>           - Move the pet            ║
         ║                                                          ║
         ║ Information Commands (don't consume turn):               ║
         ║   describe <player>            - Player info             ║

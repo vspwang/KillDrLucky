@@ -10,15 +10,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-
 /**
- * Parser for the Kill Dr Lucky world file format:
- * Line 1: rows cols worldName... 
- * Line 2: targetHealth targetName... (target starts at space 0)
- * Line 3: spaceCount 
- * Next N lines (spaces): ulRow ulCol lrRow lrCol roomName... 
- * Next line: itemCount 
- * Next M lines (items): roomIndex damage itemName...
+ * Parser for the Kill Dr Lucky world file format: Line 1: rows cols
+ * worldName... Line 2: targetHealth targetName... (target starts at space 0)
+ * Line 3: spaceCount Next N lines (spaces): ulRow ulCol lrRow lrCol roomName...
+ * Next line: itemCount Next M lines (items): roomIndex damage itemName...
  * Notes: - Names may contain spaces (everything after the numeric fields on
  * each line). - Rect coordinates are inclusive (width/height add +1 logic). -
  * Rooms must be within bounds and must not overlap (shared edges allowed). -
@@ -34,30 +30,33 @@ public class WorldParser {
     public final List<Room> rooms;
     public final List<Item> items;
     public final Target target;
-    
-    /**.
+    public final Pet pet;
+
+    /**
+     * .
      *
      * @param worldName Name of the World
-     * @param rows Numbers of Row
-     * @param cols Numbers of Col
-     * @param rooms List of Room
-     * @param items List of Item
-     * @param target Target for this World
+     * @param rows      Numbers of Row
+     * @param cols      Numbers of Col
+     * @param rooms     List of Room
+     * @param items     List of Item
+     * @param target    Target for this World
      */
-    
+
     public WorldData(String worldName, int rows, int cols, List<Room> rooms, List<Item> items,
-        Target target) {
+        Target target, Pet pet) {
       this.worldName = Objects.requireNonNull(worldName);
       this.rows = rows;
       this.cols = cols;
       this.rooms = Collections.unmodifiableList(new ArrayList<>(rooms));
       this.items = Collections.unmodifiableList(new ArrayList<>(items));
       this.target = Objects.requireNonNull(target);
+      this.pet = Objects.requireNonNull(pet);
     }
   }
 
-  /**. 
-   * Parse from a file path. 
+  /**
+   * . Parse from a file path.
    *
    * @param path file path
    * @return parse(Reader)
@@ -68,8 +67,8 @@ public class WorldParser {
     }
   }
 
-  /**.
-   * Parse from any Reader. 
+  /**
+   * . Parse from any Reader.
    *
    * @param reader input stream
    * @return parsed data into a WorldDara object
@@ -91,17 +90,26 @@ public class WorldParser {
     String targetName = mustNonBlank(h2.rest, 2, "target name");
     final Target target = new Target(targetName, targetHealth, /* start */ 0);
 
-    // --- Line 3: spaceCount
+    // --- Line 3: petName
     int lineNo = 3;
     String line3 = readNonEmpty(br, lineNo);
-    int spaceCount = parseSingleInt(line3, lineNo, "space count", 1, Integer.MAX_VALUE);
+    String petName = line3.trim();
+    if (petName.isEmpty()) {
+      throw parseError(lineNo, "Pet name cannot be empty.");
+    }
+    final Pet pet = new Pet(petName, 0);
+
+    // --- Line 4: spaceCount
+    lineNo++;
+    String line4 = readNonEmpty(br, lineNo);
+    int spaceCount = parseSingleInt(line4, lineNo, "space count", 1, Integer.MAX_VALUE);
 
     // --- Next N lines: spaces
     List<Room> rooms = new ArrayList<>(spaceCount);
     for (int i = 0; i < spaceCount; i++) {
       String ln = readNonEmpty(br, ++lineNo);
       ParsedHead hs = parseHeadWithInts(ln, 4, lineNo);
-      int ulr = hs.ints[0]; 
+      int ulr = hs.ints[0];
       int ulc = hs.ints[1];
       int lrr = hs.ints[2];
       int lrc = hs.ints[3];
@@ -135,7 +143,7 @@ public class WorldParser {
     validateItems(rooms, items);
     validateTargetStart(rooms, target);
 
-    return new WorldData(worldName, rows, cols, rooms, items, target);
+    return new WorldData(worldName, rows, cols, rooms, items, target, pet);
   }
 
   // ----------------- helpers -----------------
