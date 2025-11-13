@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -27,7 +26,7 @@ public class ComputerPlayerTest {
 
   @Test
   void testIsComputerControlledTrue() {
-    ComputerPlayer bot = new ComputerPlayer("Bot", 0, new ArrayList<>());
+    ComputerPlayer bot = new ComputerPlayer("Bot", 0, 10);
     assertTrue(bot.isComputerControlled());
   }
 
@@ -40,7 +39,7 @@ public class ComputerPlayerTest {
 
   @Test
   void testConstructor() {
-    ComputerPlayer bot = new ComputerPlayer("bot", 1, new ArrayList<>());
+    ComputerPlayer bot = new ComputerPlayer("bot", 1, 10);
     assertEquals("bot", bot.getName());
     assertEquals(1, bot.getCurrentSpaceIndex());
   }

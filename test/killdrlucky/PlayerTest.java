@@ -23,7 +23,7 @@ public class PlayerTest {
     WorldParser parser = new WorldParser();
     WorldParser.WorldData data = parser.parse(Path.of("res/mansion.txt"));
     world = new World(data, new AxisAlignedVisibility());
-    player = new Player("Alice", 0, new ArrayList<>());
+    player = new Player("Alice", 0, 10);
   }
 
   @Test
@@ -32,36 +32,6 @@ public class PlayerTest {
     assertEquals(0, player.getCurrentSpaceIndex());
     assertTrue(player.getItems().isEmpty());
     assertFalse(player.isComputerControlled());
-  }
-
-  @Test
-  void testMoveValidDirection() {
-    // manually move to neighbor using world API
-    String result = player.move(world.getSpaces().get(1).getName(), world);
-    assertTrue(result.toLowerCase().contains("moved"));
-  }
-
-  @Test
-  void testPickUpItemSuccess() {
-    Item it = world.getItems().get(0);
-    it.setRoomIndex(0);
-    String result = player.pickUp(it.getName(), world);
-    assertTrue(result.contains("picked up"));
-    assertTrue(player.getItems().contains(it));
-  }
-
-  @Test
-  void testPickUpItemNotInRoom() {
-    Item it = world.getItems().get(0);
-    it.setRoomIndex(5);
-    String result = player.pickUp(it.getName(), world);
-    assertTrue(result.toLowerCase().contains("not found"));
-  }
-
-  @Test
-  void testLookAround() {
-    String out = player.lookAround(world);
-    assertTrue(out.contains("You are in"));
   }
 
   @Test

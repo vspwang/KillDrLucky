@@ -9,10 +9,10 @@ import java.awt.image.BufferedImage;
 public interface WorldModel extends ReadOnlyWorld {
 
   /**
-   * Moves the target character (Dr Lucky) to the next space. The order of
+   * Moves the target character (Dr Lucky) to the designated space. Automatically, the order of
    * movement follows space index sequence (0 → 1 → ... → n−1 → 0).
    */
-  void moveTargetNext();
+  void moveTarget();
 
   /**
    * Renders the world as a 2D image for visualization.

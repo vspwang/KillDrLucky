@@ -3,6 +3,7 @@ package killdrlucky;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,7 +14,7 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
-
+import javax.imageio.ImageIO;
 
 /**
  * Concrete implementation of the WorldModel interface. Represents the full game
@@ -105,19 +106,43 @@ public class World implements WorldModel, GameModelApi {
   }
 
   @Override
+  public List<Item> getItems() {
+    return Collections.unmodifiableList(items);
+  }
+
+  @Override
   public String describeSpace(int idx) {
     Space r = getSpace(idx);
     StringBuilder sb = new StringBuilder();
 
-    sb.append("Room: ").append(r.getName()).append("\n");
+    sb.append("╔══════════════════════════════════════╗\n");
+    sb.append(String.format("║ Room: %-30s ║\n", r.getName()));
+    sb.append(String.format("║ Index: %-29d ║\n", idx));
+    sb.append("╚══════════════════════════════════════╝\n\n");
 
-    // Retrieve items in this room by filtering from global item list
-    List<Item> stuff = new ArrayList<>();
-    for (Item it : items) {
-      if (it.getRoomIndex() == idx) {
-        stuff.add(it);
-      }
+    // Add players in the space information
+    List<String> playersHere = players.stream().filter(p -> p.getCurrentSpaceIndex() == idx)
+        .map(p -> String.format("%s (%s)", p.getName(), p.isComputerControlled() ? "AI" : "Human"))
+        .collect(Collectors.toList());
+
+    sb.append("Players: ");
+    if (playersHere.isEmpty()) {
+      sb.append("none");
+    } else {
+      sb.append(String.join(", ", playersHere));
     }
+    sb.append("\n");
+
+    // Target character
+    if (target.getCurrentSpaceIndex() == idx) {
+      sb.append("\nTarget (").append(target.getName()).append(") is here! Health: ")
+          .append(target.getHealth());
+    }
+    sb.append("\n");
+
+    // Items in this room
+    List<Item> stuff = items.stream().filter(it -> it.getRoomIndex() == idx)
+        .collect(Collectors.toList());
 
     sb.append("Items: ");
     if (stuff.isEmpty()) {
@@ -127,28 +152,31 @@ public class World implements WorldModel, GameModelApi {
         sb.append(it.getName()).append("(").append(it.getDamage()).append(") ");
       }
     }
+    sb.append("\n");
 
-    sb.append("\nVisible from here: ");
+    // Add visibility information
+    sb.append("️Visible spaces: ");
     Set<Integer> visible = visibleFrom(idx);
     if (visible.isEmpty()) {
       sb.append("none");
     } else {
-      for (int v : visible) {
-        sb.append(spaces.get(v).getName()).append(" ");
-      }
+      sb.append(visible.stream()
+          .map(v -> spaces.get(v).getName())
+          .collect(Collectors.joining(", ")));
     }
-    
+    sb.append("\n");
+
     // Add neighbors section
-    sb.append("\nNeighbors: ");
+    sb.append("Neighbors: ");
     List<Integer> adj = neighborsOf(idx);
     if (adj == null || adj.isEmpty()) {
       sb.append("none");
     } else {
-      for (int n : adj) {
-        sb.append(spaces.get(n).getName()).append(" ");
-      }
+      sb.append(adj.stream()
+          .map(n -> String.format("%s [%d]", spaces.get(n).getName(), n))
+          .collect(Collectors.joining(", ")));
     }
-    
+
     return sb.toString().trim();
   }
 
@@ -163,39 +191,39 @@ public class World implements WorldModel, GameModelApi {
   }
 
   // ---------- Game Mechanics ----------
-
   @Override
-  public void moveTargetNext() {
-    int next = (target.getCurrentSpaceIndex() + 1) % spaces.size();
-    target.setCurrentSpaceIndex(next);
+  public void moveTarget() {
+    moveTargetNext();
   }
 
   @Override
   public AttackStatus canAttack(int playerId, int itemId) {
     if (playerId < 0 || playerId >= players.size()) {
-      throw new IllegalArgumentException("Invalid player index.");
+      throw new IllegalArgumentException("Invalid player index: " + playerId);
     }
-    if (target == null || !target.isAlive()) {
+    
+    if (!target.isAlive()) {
       return AttackStatus.TARGET_ALREADY_DEAD;
     }
 
-    Iplayer p = players.get(playerId);
-    if (p.getCurrentSpaceIndex() != target.getCurrentSpaceIndex()) {
+    Iplayer player = players.get(playerId);
+    
+    if (player.getCurrentSpaceIndex() != target.getCurrentSpaceIndex()) {
       return AttackStatus.NOT_SAME_SPACE;
     }
 
-    // find weapon by itemId (index in global items list)
+    // Find weapon by itemId
     if (itemId < 0 || itemId >= items.size()) {
       return AttackStatus.NO_SUCH_ITEM;
     }
+    
     Item weapon = items.get(itemId);
-    if (!p.getItems().contains(weapon)) {
+    if (!player.getItems().contains(weapon)) {
       return AttackStatus.NO_SUCH_ITEM;
     }
 
-    // check visibility (is player being seen by others)
-    boolean seen = isSeenByOthers(p);
-    if (seen) {
+    // Check if seen by others
+    if (isSeenByOthers(player)) {
       return AttackStatus.SEEN_BY_OTHERS;
     }
 
@@ -209,13 +237,299 @@ public class World implements WorldModel, GameModelApi {
       return status;
     }
 
-    Iplayer p = players.get(playerId);
+    Iplayer player = players.get(playerId);
     Item weapon = items.get(itemId);
     target.takeDamage(weapon.getDamage());
-
-    // optional: remove the weapon after use
-    p.removeItem(weapon);
+    player.removeItem(weapon);
+    
+    if (!target.isAlive()) {
+      gameOver = true;
+    }
+    
     return AttackStatus.SUCCESS;
+  }
+
+  public List<Iplayer> getPlayers() {
+    return Collections.unmodifiableList(players);
+  }
+
+  @Override
+  public void addPlayer(String name, int startSpaceIndex,
+                       boolean computerControlled, int capacity) {
+    Objects.requireNonNull(name, "Player name cannot be null");
+    
+    if (name.trim().isEmpty()) {
+      throw new IllegalArgumentException("Player name cannot be empty");
+    }
+    
+    if (startSpaceIndex < 0 || startSpaceIndex >= spaces.size()) {
+      throw new IllegalArgumentException(
+          String.format("Invalid starting index: %d. Valid range: [0, %d]",
+                       startSpaceIndex, spaces.size() - 1));
+    }
+    
+    if (capacity < 0) {
+      throw new IllegalArgumentException(
+          "Capacity must be non-negative, got: " + capacity);
+    }
+    
+    // Check for duplicate names
+    for (Iplayer p : players) {
+      if (p.getName().equalsIgnoreCase(name)) {
+        throw new IllegalArgumentException(
+            "Player with name '" + name + "' already exists");
+      }
+    }
+    
+    Iplayer player = computerControlled
+        ? new ComputerPlayer(name, startSpaceIndex, capacity)
+        : new Player(name, startSpaceIndex, capacity);
+    players.add(player);
+  }
+
+  @Override
+  public String movePlayer(String playerName, String destination) {
+    Iplayer player = findPlayer(playerName);
+    int currentIdx = player.getCurrentSpaceIndex();
+    List<Integer> neighborIndices = neighborsOf(currentIdx);
+
+    if (neighborIndices == null || neighborIndices.isEmpty()) {
+      return String.format("%s cannot move - no available neighbors.", playerName);
+    }
+
+    // Try to parse destination as index first
+    try {
+      int destIdx = Integer.parseInt(destination.trim());
+      if (destIdx < 0 || destIdx >= neighborIndices.size()) {
+        return String.format("Invalid destination index: %d. Valid range: [0, %d]",
+                            destIdx, neighborIndices.size() - 1);
+      }
+      int targetSpaceIdx = neighborIndices.get(destIdx);
+      player.setCurrentSpaceIndex(targetSpaceIdx);
+      return String.format("%s moved to %s", 
+                          playerName, 
+                          spaces.get(targetSpaceIdx).getName());
+    } catch (NumberFormatException e) {
+      // Try to match by space name
+      for (int neighborIdx : neighborIndices) {
+        if (spaces.get(neighborIdx).getName().equalsIgnoreCase(destination)) {
+          player.setCurrentSpaceIndex(neighborIdx);
+          return String.format("%s moved to %s", 
+                              playerName, 
+                              spaces.get(neighborIdx).getName());
+        }
+      }
+      return String.format("No neighboring space named '%s'. Available: %s",
+                          destination,
+                          neighborIndices.stream()
+                              .map(i -> spaces.get(i).getName())
+                              .collect(Collectors.joining(", ")));
+    }
+  }
+
+  @Override
+  public String pickUpItem(String playerName, String itemName) {
+    if (itemName == null || itemName.trim().isEmpty()) {
+      return "Invalid item name.";
+    }
+
+    Iplayer player = findPlayer(playerName);
+    int currentIdx = player.getCurrentSpaceIndex();
+
+    // Check capacity first
+    if (!player.canCarryMore()) {
+      return String.format("%s cannot carry more items (capacity: %d/%d)",
+                          playerName, 
+                          player.getCurrentCapacity(),
+                          player.getMaxCapacity());
+    }
+
+    // Find the item in the current space
+    Item targetItem = null;
+    for (Item it : items) {
+      if (it.getName().equalsIgnoreCase(itemName) 
+          && it.getRoomIndex() == currentIdx) {
+        targetItem = it;
+        break;
+      }
+    }
+
+    if (targetItem == null) {
+      return String.format("Item '%s' not found in %s.", 
+                          itemName,
+                          spaces.get(currentIdx).getName());
+    }
+
+    // Transfer item from world to player
+    player.addItem(targetItem);
+    targetItem.setRoomIndex(-1); // Mark as picked up
+    
+    return String.format("%s picked up %s (damage: %d). Carrying: %d/%d",
+                        playerName, 
+                        targetItem.getName(),
+                        targetItem.getDamage(),
+                        player.getCurrentCapacity(),
+                        player.getMaxCapacity());
+  }
+
+  @Override
+  public String lookAround(String playerName) {
+    Iplayer player = findPlayer(playerName);
+    int currentIdx = player.getCurrentSpaceIndex();
+    Space currentSpace = spaces.get(currentIdx);
+
+    StringBuilder sb = new StringBuilder();
+    sb.append("═══════════════════════════════════\n");
+    sb.append(String.format("Looking around from: %s\n", currentSpace.getName()));
+    sb.append("═══════════════════════════════════\n\n");
+
+    // Items in current space
+    List<Item> itemsHere = items.stream()
+        .filter(it -> it.getRoomIndex() == currentIdx)
+        .collect(Collectors.toList());
+
+    sb.append("Items here: ");
+    if (itemsHere.isEmpty()) {
+      sb.append("none");
+    } else {
+      sb.append(itemsHere.stream()
+          .map(it -> String.format("%s (%d)", it.getName(), it.getDamage()))
+          .collect(Collectors.joining(", ")));
+    }
+    sb.append("\n");
+
+    // Other players in current space
+    List<String> otherPlayersHere = players.stream()
+        .filter(p -> p.getCurrentSpaceIndex() == currentIdx 
+                     && !p.getName().equals(playerName))
+        .map(Iplayer::getName)
+        .collect(Collectors.toList());
+
+    if (!otherPlayersHere.isEmpty()) {
+      sb.append("Other players here: ")
+        .append(String.join(", ", otherPlayersHere))
+          .append("\n");
+    }
+
+    // Target in current space
+    if (target.getCurrentSpaceIndex() == currentIdx) {
+      sb.append(String.format("%s is here! (Health: %d)\n",
+                             target.getName(), target.getHealth()));
+    }
+
+    // Visible spaces
+    Set<Integer> visible = visibleFrom(currentIdx);
+    sb.append("\nYou can see into:\n");
+    if (visible.isEmpty()) {
+      sb.append("  (no visible spaces)\n");
+    } else {
+      for (int idx : visible) {
+        Space space = spaces.get(idx);
+        sb.append(String.format("  • %s", space.getName()));
+        
+        // Players in visible space
+        List<String> playersInSpace = players.stream()
+            .filter(p -> p.getCurrentSpaceIndex() == idx)
+            .map(Iplayer::getName)
+            .collect(Collectors.toList());
+        
+        if (!playersInSpace.isEmpty()) {
+          sb.append(" [").append(String.join(", ", playersInSpace)).append("]");
+        }
+        
+        // Target in visible space
+        if (target.getCurrentSpaceIndex() == idx) {
+          sb.append(String.format(" [%s is there!]", target.getName()));
+        }
+        
+        sb.append("\n");
+      }
+    }
+
+    return sb.toString().trim();
+  }
+
+  @Override
+  public String describePlayer(String playerName) {
+    Iplayer player = findPlayer(playerName);
+    Space currentSpace = spaces.get(player.getCurrentSpaceIndex());
+    
+    StringBuilder sb = new StringBuilder();
+    sb.append("╔════════════════════════════════════╗\n");
+    sb.append(String.format("║ Player: %-26s ║\n", player.getName()));
+    sb.append("╚════════════════════════════════════╝\n");
+    sb.append(String.format("Type: %s\n", 
+                           player.isComputerControlled() ? "Computer (AI)" : "Human"));
+    sb.append(String.format("Location: %s [index: %d]\n", 
+                           currentSpace.getName(), 
+                           player.getCurrentSpaceIndex()));
+    sb.append(String.format("Inventory: %d/%d items\n",
+                           player.getCurrentCapacity(),
+                           player.getMaxCapacity()));
+    
+    if (player.getItems().isEmpty()) {
+      sb.append("  (empty)\n");
+    } else {
+      for (Item item : player.getItems()) {
+        sb.append(String.format("  • %s (damage: %d)\n", 
+                               item.getName(), 
+                               item.getDamage()));
+      }
+    }
+    
+    return sb.toString().trim();
+  }
+
+  @Override
+  public String autoAction(String playerName) {
+    Iplayer player = findPlayer(playerName);
+    
+    if (!player.isComputerControlled()) {
+      throw new IllegalArgumentException(
+          playerName + " is not a computer-controlled player");
+    }
+
+    int currentIdx = player.getCurrentSpaceIndex();
+    List<Integer> neighborIndices = neighborsOf(currentIdx);
+
+    // 50% chance to move if there are neighbors
+    if (random.nextDouble() < 0.5 && !neighborIndices.isEmpty()) {
+      int randomNeighborIdx = neighborIndices.get(random.nextInt(neighborIndices.size()));
+      player.setCurrentSpaceIndex(randomNeighborIdx);
+      return String.format("[AI] %s moved to %s", 
+                          playerName, 
+                          spaces.get(randomNeighborIdx).getName());
+    }
+
+    // Try to pick up an item if at capacity allows
+    if (player.canCarryMore()) {
+      for (Item item : items) {
+        if (item.getRoomIndex() == currentIdx) {
+          player.addItem(item);
+          item.setRoomIndex(-1);
+          return String.format("[AI] %s picked up %s (damage: %d)", 
+                              playerName, 
+                              item.getName(),
+                              item.getDamage());
+        }
+      }
+    }
+
+    // Default: look around
+    return String.format("[AI] %s looked around %s but found nothing interesting.",
+                        playerName,
+                        spaces.get(currentIdx).getName());
+  }
+
+  @Override
+  public boolean isGameOver() {
+    return gameOver || !target.isAlive();
+  }
+
+  @Override
+  public void endGame() {
+    gameOver = true;
+
   }
 
   // ---------- Graphics ----------
@@ -243,147 +557,47 @@ public class World implements WorldModel, GameModelApi {
       g.drawRect(x, y, w, h);
       g.drawString(r.getName(), x + 2, y + 12);
       g.drawString(String.valueOf(r.getIndex()), x + 2, y + 24);
-    
+
     }
 
     g.dispose();
     return img;
   }
-
-  public List<Iplayer> getPlayers() {
-    return Collections.unmodifiableList(players);
-  }
-
-  @Override
-  public void addPlayer(String name, int startIdx, boolean isAi, int capacity) {
-    Objects.requireNonNull(name, "Player name cannot be null");
-    if (startIdx < 0 || startIdx >= spaces.size()) {
-      throw new IllegalArgumentException("Invalid starting index");
-    }
-    for (Iplayer p : players) {
-      if (p.getName().equalsIgnoreCase(name)) {
-        throw new IllegalArgumentException("Duplicate player name");
-      }
-    }
-    Iplayer player = isAi
-        ? new ComputerPlayer(name, startIdx, capacity)
-        : new Player(name, startIdx, capacity);
-    players.add(player);
-    
-  }
-
-  @Override
-  public String movePlayer(String name, String destination) {
-    Iplayer p = findPlayer(name);
-    if (p == null) {
-      throw new IllegalArgumentException("Player not found: " + name);
-    }
-    return p.move(destination, this);
-  }
-
-  @Override
-  public String pickUpItem(String name, String itemName) {
-    Iplayer p = findPlayer(name);
-    return p.pickUp(itemName, this);
-  }
-
-  @Override
-  public String lookAround(String name) {
-    Iplayer p = findPlayer(name);
-    return p.lookAround(this);
-  }
-
-  @Override
-  public String describePlayer(String name) {
-    Iplayer p = findPlayer(name);
-    Space current = spaces.get(p.getCurrentSpaceIndex());
-    StringBuilder sb = new StringBuilder();
-    sb.append("Player: ").append(p.getName())
-      .append(" (").append(p.isComputerControlled() ? "AI" : "Human").append(")\n")
-      .append("Current Space: ").append(current.getName()).append("\nItems: ");
-    if (p.getItems().isEmpty()) {
-      sb.append("None");
-    } else {
-      sb.append(p.getItems().stream().map(Item::getName).collect(Collectors.joining(", ")));
-    }
-    return sb.toString();
-  }
-
-  @Override
-  public void moveTarget() {
-    moveTargetNext();
-    
-  }
-
-  @Override
-  public String autoAction(String name) {
-    Iplayer p = findPlayer(name);
-    if (p == null) {
-      return "AI player not found: " + name;
-    }
-
-    int currentIdx = p.getCurrentSpaceIndex();
-    List<Integer> neighbors = neighborsOf(currentIdx);
-
-    // 50% chance to move, 50% to pick up (if available)
-    if (Math.random() < 0.5 && !neighbors.isEmpty()) {
-      int randomIdx = neighbors.get((int) (Math.random() * neighbors.size()));
-      String roomName = spaces.get(randomIdx).getName();
-      p.setCurrentSpaceIndex(randomIdx);
-      return name + " (AI) moved to " + roomName + ".";
-    } else {
-      // Try picking up an item from current room
-      for (Item it : items) {
-        if (it.getRoomIndex() == currentIdx) {
-          // Remove from room and add to player
-          p.addItem(it);
-          it.setRoomIndex(-1); // remove from world
-          return name + " (AI) picked up " + it.getName() + ".";
-        }
-      }
-      return name + " (AI) looked around but found nothing.";
-    }
-  }
-
-
-  @Override
-  public boolean isGameOver() {
-    return gameOver;
-  }
-
-  @Override
-  public void endGame() {
-    gameOver = true;
-    
-  }
-
+  
   @Override
   public void saveWorldImage(String filename) throws IOException {
-    // TODO Auto-generated method stub
-    ;
+    BufferedImage img = renderBufferedImage(30);
+    File outputFile = new File(filename);
+    ImageIO.write(img, "png", outputFile);
   }
-  
+
   // ---------- Internal Utilities ----------
 
   private Map<Integer, List<Integer>> computeNeighbors() {
     Map<Integer, List<Integer>> map = new HashMap<>();
+    
     for (int i = 0; i < spaces.size(); i++) {
       Space s1 = spaces.get(i);
       Rect r1 = s1.getArea();
       List<Integer> adj = new ArrayList<>();
+      
       for (int j = 0; j < spaces.size(); j++) {
         if (i == j) {
           continue;
         }
         Rect r2 = spaces.get(j).getArea();
 
-        boolean horizontalTouch = (r1.getLowerRight().getRow() >= r2.getUpperLeft().getRow()
-            && r1.getUpperLeft().getRow() <= r2.getLowerRight().getRow())
+        // Check for horizontal adjacency
+        boolean horizontalTouch = 
+            (r1.getLowerRight().getRow() >= r2.getUpperLeft().getRow()
+             && r1.getUpperLeft().getRow() <= r2.getLowerRight().getRow())
             && (r1.getLowerRight().getCol() + 1 == r2.getUpperLeft().getCol()
                 || r2.getLowerRight().getCol() + 1 == r1.getUpperLeft().getCol());
 
-        boolean verticalTouch = (r1.getLowerRight().getCol() >= r2.getUpperLeft().getCol()
-            && r1.getUpperLeft().getCol() <= r2.getLowerRight().getCol())
+        // Check for vertical adjacency
+        boolean verticalTouch = 
+            (r1.getLowerRight().getCol() >= r2.getUpperLeft().getCol()
+             && r1.getUpperLeft().getCol() <= r2.getLowerRight().getCol())
             && (r1.getLowerRight().getRow() + 1 == r2.getUpperLeft().getRow()
                 || r2.getLowerRight().getRow() + 1 == r1.getUpperLeft().getRow());
 
@@ -396,30 +610,38 @@ public class World implements WorldModel, GameModelApi {
     return map;
   }
 
-  private boolean isSeenByOthers(Iplayer p2) {
-    int attackerRoom = p2.getCurrentSpaceIndex();
-    Set<Integer> visibleRooms = visibleFrom(attackerRoom);
-    for (Iplayer p : players) {
-      if (p == p2) {
+  private boolean isSeenByOthers(Iplayer player) {
+    int playerSpace = player.getCurrentSpaceIndex();
+    Set<Integer> visibleSpaces = visibleFrom(playerSpace);
+    
+    for (Iplayer other : players) {
+      if (other == player) {
         continue;
       }
-      if (visibleRooms.contains(p.getCurrentSpaceIndex())) {
+      // Check if other player is in a visible space
+      if (visibleSpaces.contains(other.getCurrentSpaceIndex())) {
+        return true;
+      }
+      // Also check if other player can see this space
+      Set<Integer> otherVisible = visibleFrom(other.getCurrentSpaceIndex());
+      if (otherVisible.contains(playerSpace)) {
         return true;
       }
     }
+    
     return false;
   }
-  
+
+  private void moveTargetNext() {
+    int next = (target.getCurrentSpaceIndex() + 1) % spaces.size();
+    target.setCurrentSpaceIndex(next);
+  }
+
   private Iplayer findPlayer(String name) {
     return players.stream()
         .filter(p -> p.getName().equalsIgnoreCase(name))
         .findFirst()
         .orElseThrow(() -> new IllegalArgumentException("Player not found: " + name));
-  }
-
-  @Override
-  public List<Item> getItems() {
-    return Collections.unmodifiableList(items);
   }
 
 }
