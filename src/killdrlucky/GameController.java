@@ -476,6 +476,16 @@ public class GameController implements Controller {
         out.append(String.format("\n→ Target moved to: %s\n",
                                 model.getSpace(model.getTarget().getCurrentSpaceIndex())
                                     .getName()));
+        //EXTRA CREDIT: Move pet with DFS traversal
+        int oldPetLocation = model.getPet().getCurrentSpaceIndex();
+        model.movePetDfs();
+        int newPetLocation = model.getPet().getCurrentSpaceIndex();
+        
+        if (oldPetLocation != newPetLocation) {
+          out.append(String.format("🐾 %s wandered to: %s\n",
+                                  model.getPet().getName(),
+                                  model.getSpace(newPetLocation).getName()));
+        }
         turnCount++;
       }
     }

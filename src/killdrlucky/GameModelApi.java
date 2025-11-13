@@ -162,6 +162,13 @@ public interface GameModelApi extends ReadOnlyWorld {
    * @return the pet
    */
   Pet getPet();
+  
+  /**
+   * Moves the pet following a depth-first traversal pattern.
+   * 
+   * <p>This implements the extra credit wandering pet feature.
+   */
+  void movePetDfs();
 
 
 }

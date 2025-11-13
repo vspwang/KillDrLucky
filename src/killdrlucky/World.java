@@ -8,11 +8,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
+import java.util.Stack;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 
@@ -34,6 +36,9 @@ public class World implements WorldModel, GameModelApi {
   private boolean gameOver;
   private final Random random;
   private final Pet pet;
+  
+  private final Stack<Integer> dfsStack;
+  private final Set<Integer> dfsVisited;
 
   /**
    * Constructs a World object from parsed data.
@@ -57,6 +62,11 @@ public class World implements WorldModel, GameModelApi {
     this.random = new Random();
     this.gameOver = false;
     this.pet = data.pet;
+    
+    // Initialize DFS traversal for wandering pet
+    this.dfsStack = new Stack<>();
+    this.dfsVisited = new HashSet<>();
+    initializeDfsTraversal();
   }
 
   // ---------- Core Queries ----------
@@ -207,6 +217,90 @@ public class World implements WorldModel, GameModelApi {
   public Pet getPet() {
     return pet;
   }
+  
+  /**
+   * Initializes the DFS traversal starting from the pet's current location.
+   * 
+   * <p>This sets up the stack and visited set for depth-first traversal
+   * of all spaces in the world.
+   */
+  private void initializeDfsTraversal() {
+    dfsStack.clear();
+    dfsVisited.clear();
+    
+    // Start DFS from pet's current location
+    int startIdx = pet.getCurrentSpaceIndex();
+    dfsStack.push(startIdx);
+    dfsVisited.add(startIdx);
+  }
+
+  /**
+   * Moves the pet to the next space following a DFS traversal pattern.
+   * 
+   * <p>This implements the extra credit wandering pet feature.
+   * The pet visits all spaces in the world following a depth-first
+   * traversal order, then restarts from space 0.
+   * 
+   * <p>DFS algorithm:
+   * <ol>
+   *   <li>Pop current space from stack</li>
+   *   <li>Get all unvisited neighbors</li>
+   *   <li>Push unvisited neighbors onto stack (in reverse order for consistency)</li>
+   *   <li>Move pet to top of stack</li>
+   *   <li>If stack is empty, restart DFS from space 0</li>
+   * </ol>
+   */
+  public void movePetDfs() {
+    // If stack is empty or all spaces visited, restart DFS
+    if (dfsStack.isEmpty() || dfsVisited.size() >= spaces.size()) {
+      // Reset and start from space 0
+      dfsStack.clear();
+      dfsVisited.clear();
+      dfsStack.push(0);
+      dfsVisited.add(0);
+      pet.setCurrentSpaceIndex(0);
+      return;
+    }
+    
+    // Get current position
+    int currentIdx = dfsStack.peek();
+    
+    // Get neighbors of current space
+    List<Integer> neighborIndices = neighborsOf(currentIdx);
+    
+    // Find unvisited neighbors
+    List<Integer> unvisited = new ArrayList<>();
+    for (int neighborIdx : neighborIndices) {
+      if (!dfsVisited.contains(neighborIdx)) {
+        unvisited.add(neighborIdx);
+      }
+    }
+    
+    if (!unvisited.isEmpty()) {
+      // Push unvisited neighbors onto stack (in reverse order for consistent traversal)
+      for (int i = unvisited.size() - 1; i >= 0; i--) {
+        int neighborIdx = unvisited.get(i);
+        dfsStack.push(neighborIdx);
+        dfsVisited.add(neighborIdx);
+      }
+      
+      // Move pet to the top of the stack
+      int nextIdx = dfsStack.peek();
+      pet.setCurrentSpaceIndex(nextIdx);
+    } else {
+      // No unvisited neighbors, backtrack
+      dfsStack.pop();
+      
+      if (!dfsStack.isEmpty()) {
+        int nextIdx = dfsStack.peek();
+        pet.setCurrentSpaceIndex(nextIdx);
+      } else {
+        // Traversal complete, restart
+        initializeDfsTraversal();
+        pet.setCurrentSpaceIndex(0);
+      }
+    }
+  }
 
   /**
    * Attempts to attack the target character with an item or by poking.
@@ -292,6 +386,7 @@ public class World implements WorldModel, GameModelApi {
         int oldIdx = pet.getCurrentSpaceIndex();
         String oldSpaceName = spaces.get(oldIdx).getName();
         pet.setCurrentSpaceIndex(i);
+        initializeDfsTraversal();
         return String.format("🐾 Moved %s from %s to %s", pet.getName(), oldSpaceName, spaceName);
       }
     }
