@@ -47,10 +47,10 @@ public class World implements WorldModel, GameModelApi {
    * Constructs a World object from parsed data.
    *
    * @param data               the parsed world data
-   * @param visibilityStrategy the strategy to use for visibility
+   * @param visibilityStrategyParam the strategy to use for visibility
    */
-  public World(WorldParser.WorldData data, VisibilityStrategy visibilityStrategy) {
-    if (data == null || visibilityStrategy == null) {
+  public World(WorldParser.WorldData data, VisibilityStrategy visibilityStrategyParam) {
+    if (data == null || visibilityStrategyParam == null) {
       throw new IllegalArgumentException("Parameters cannot be null");
     }
     this.name = data.worldName;
@@ -59,7 +59,7 @@ public class World implements WorldModel, GameModelApi {
     this.spaces = new ArrayList<>(data.rooms);
     this.items = new ArrayList<>(data.items);
     this.target = data.target;
-    this.visibilityStrategy = visibilityStrategy;
+    this.visibilityStrategy = visibilityStrategyParam;
     this.neighbors = computeNeighbors();
     this.players = new ArrayList<>();
     this.random = new Random();
@@ -624,13 +624,13 @@ public class World implements WorldModel, GameModelApi {
 
     // NEW: Neighboring spaces with detailed information
     sb.append("\nNeighboring Spaces:\n");
-    List<Integer> neighbors = neighborsOf(currentIdx);
+    List<Integer> neighborsList = neighborsOf(currentIdx);
     Set<Integer> visible = visibleFrom(currentIdx);
 
-    if (neighbors.isEmpty()) {
+    if (neighborsList.isEmpty()) {
       sb.append("  (no neighbors)\n");
     } else {
-      for (int neighborIdx : neighbors) {
+      for (int neighborIdx : neighborsList) {
         Space neighborSpace = spaces.get(neighborIdx);
         sb.append(String.format("  • %s [%d]", neighborSpace.getName(), neighborIdx));
 
@@ -937,9 +937,9 @@ public class World implements WorldModel, GameModelApi {
     target.setCurrentSpaceIndex(next);
   }
 
-  private Iplayer findPlayer(String name) {
-    return players.stream().filter(p -> p.getName().equalsIgnoreCase(name)).findFirst()
-        .orElseThrow(() -> new IllegalArgumentException("Player not found: " + name));
+  private Iplayer findPlayer(String nameParam) {
+    return players.stream().filter(p -> p.getName().equalsIgnoreCase(nameParam)).findFirst()
+        .orElseThrow(() -> new IllegalArgumentException("Player not found: " + nameParam));
   }
 
 }

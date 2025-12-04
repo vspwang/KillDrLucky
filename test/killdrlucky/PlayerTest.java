@@ -24,6 +24,7 @@ public class PlayerTest {
   @BeforeEach
   void setup() throws IOException {
     WorldParser parser = new WorldParser();
+    @SuppressWarnings("unused")
     WorldParser.WorldData data = parser.parse(Path.of("res/mansion.txt"));
     player = new Player("Alice", 0, 10);
   }
