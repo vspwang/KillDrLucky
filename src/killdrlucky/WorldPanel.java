@@ -14,31 +14,54 @@ import javax.swing.JPanel;
  */
 public class WorldPanel extends JPanel implements WorldPanelInterface {
   private static final long serialVersionUID = 1L;
-  private final ReadOnlyWorld model;
+  
+  private ReadOnlyWorld model;
   private final int cellSize = 20;
   
   /**
    * Creates world panel.
    * 
-   * @param modelParam ReadOnlyWorld model
+   * @param modelParam the read-only world model
    */
   public WorldPanel(ReadOnlyWorld modelParam) {
     this.model = modelParam;
-    int w = model.getCols() * cellSize;
-    int h = model.getRows() * cellSize;
-    setPreferredSize(new Dimension(w, h));
+    updateSize();
     setBackground(Color.WHITE);
+  }
+  
+  /**
+   * Update model reference.
+   * 
+   * @param newModel the new model
+   */
+  public void setModel(ReadOnlyWorld newModel) {
+    this.model = newModel;
+    updateSize();
+    repaint();
+  }
+  
+  private void updateSize() {
+    if (model != null) {
+      int w = model.getCols() * cellSize;
+      int h = model.getRows() * cellSize;
+      setPreferredSize(new Dimension(w, h));
+      revalidate();
+    }
   }
   
   @Override
   protected void paintComponent(Graphics g) {
     super.paintComponent(g);
+    if (model == null) {
+      return;
+    }
+    
     Graphics2D g2d = (Graphics2D) g;
     g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     
     drawSpaces(g2d);
     drawTarget(g2d);
-    drawPet(g2d);
+    // DON'T draw pet - requirement says "but not the pet"
     drawPlayers(g2d);
   }
   
@@ -70,18 +93,13 @@ public class WorldPanel extends JPanel implements WorldPanelInterface {
     drawIcon(g2d, target.getCurrentSpaceIndex(), "T", Color.RED, 0);
   }
   
-  private void drawPet(Graphics2D g2d) {
-    Pet pet = model.getPet();
-    drawIcon(g2d, pet.getCurrentSpaceIndex(), "P", new Color(139, 69, 19), 15);
-  }
-  
   private void drawPlayers(Graphics2D g2d) {
     List<Iplayer> players = model.getPlayers();
-    for (int i = 0; i < players.size(); i++) {
+    for (int i = 0; i < players.size() && i < 10; i++) {  // Support up to 10 players
       Iplayer player = players.get(i);
       String label = player.getName().substring(0, 1);
       Color color = player.isComputerControlled() ? Color.BLUE : Color.GREEN;
-      drawIcon(g2d, player.getCurrentSpaceIndex(), label, color, i * 12 + 30);
+      drawIcon(g2d, player.getCurrentSpaceIndex(), label, color, i * 12 + 15);
     }
   }
   
@@ -110,6 +128,34 @@ public class WorldPanel extends JPanel implements WorldPanelInterface {
       }
     }
     return -1;
+  }
+  
+  /**
+   * Get player at pixel coordinates.
+   * 
+   * @param x the x coordinate
+   * @param y the y coordinate
+   * @return player name or null if none
+   */
+  public String getPlayerAt(int x, int y) {
+    List<Iplayer> players = model.getPlayers();
+    for (int i = 0; i < players.size() && i < 10; i++) {
+      Iplayer player = players.get(i);
+      Space space = model.getSpace(player.getCurrentSpaceIndex());
+      Rect area = space.getArea();
+      
+      int offset = i * 12 + 15;
+      int iconX = area.getUpperLeft().getCol() * cellSize + cellSize / 2 + offset;
+      int iconY = area.getUpperLeft().getRow() * cellSize + cellSize / 2;
+      
+      // Check if click is within player icon (16x16 circle)
+      int dx = x - iconX;
+      int dy = y - iconY;
+      if (dx * dx + dy * dy <= 64) {  // radius = 8, so 8*8 = 64
+        return player.getName();
+      }
+    }
+    return null;
   }
   
   @Override

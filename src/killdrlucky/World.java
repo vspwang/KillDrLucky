@@ -36,12 +36,12 @@ public class World implements WorldModel, GameModelApi {
   private boolean gameOver;
   private final Random random;
   private final Pet pet;
-  
+
   private final Stack<Integer> dfsStack;
   private final Set<Integer> dfsVisited;
-  
-  private int currentPlayerIndex = 0;
+  private String winnerName = "";
 
+  private int currentPlayerIndex = 0;
 
   /**
    * Constructs a World object from parsed data.
@@ -65,7 +65,7 @@ public class World implements WorldModel, GameModelApi {
     this.random = new Random();
     this.gameOver = false;
     this.pet = data.pet;
-    
+
     // Initialize DFS traversal for wandering pet
     this.dfsStack = new Stack<>();
     this.dfsVisited = new HashSet<>();
@@ -162,7 +162,7 @@ public class World implements WorldModel, GameModelApi {
     if (pet.getCurrentSpaceIndex() == idx) {
       sb.append(String.format("Pet: %s is here!\n", pet.getName()));
     }
-    
+
     // Items in this room
     List<Item> stuff = items.stream().filter(it -> it.getRoomIndex() == idx)
         .collect(Collectors.toList());
@@ -220,17 +220,18 @@ public class World implements WorldModel, GameModelApi {
   public Pet getPet() {
     return pet;
   }
-  
+
   /**
    * Initializes the DFS traversal starting from the pet's current location.
    * 
-   * <p>This sets up the stack and visited set for depth-first traversal
-   * of all spaces in the world.
+   * <p>
+   * This sets up the stack and visited set for depth-first traversal of all
+   * spaces in the world.
    */
   private void initializeDfsTraversal() {
     dfsStack.clear();
     dfsVisited.clear();
-    
+
     // Start DFS from pet's current location
     int startIdx = pet.getCurrentSpaceIndex();
     dfsStack.push(startIdx);
@@ -240,17 +241,20 @@ public class World implements WorldModel, GameModelApi {
   /**
    * Moves the pet to the next space following a DFS traversal pattern.
    * 
-   * <p>This implements the extra credit wandering pet feature.
-   * The pet visits all spaces in the world following a depth-first
-   * traversal order, then restarts from space 0.
+   * <p>
+   * This implements the extra credit wandering pet feature. The pet visits all
+   * spaces in the world following a depth-first traversal order, then restarts
+   * from space 0.
    * 
-   * <p>DFS algorithm:
+   * <p>
+   * DFS algorithm:
    * <ol>
-   *   <li>Pop current space from stack</li>
-   *   <li>Get all unvisited neighbors</li>
-   *   <li>Push unvisited neighbors onto stack (in reverse order for consistency)</li>
-   *   <li>Move pet to top of stack</li>
-   *   <li>If stack is empty, restart DFS from space 0</li>
+   * <li>Pop current space from stack</li>
+   * <li>Get all unvisited neighbors</li>
+   * <li>Push unvisited neighbors onto stack (in reverse order for
+   * consistency)</li>
+   * <li>Move pet to top of stack</li>
+   * <li>If stack is empty, restart DFS from space 0</li>
    * </ol>
    */
   public void movePetDfs() {
@@ -264,13 +268,13 @@ public class World implements WorldModel, GameModelApi {
       pet.setCurrentSpaceIndex(0);
       return;
     }
-    
+
     // Get current position
     int currentIdx = dfsStack.peek();
-    
+
     // Get neighbors of current space
     List<Integer> neighborIndices = neighborsOf(currentIdx);
-    
+
     // Find unvisited neighbors
     List<Integer> unvisited = new ArrayList<>();
     for (int neighborIdx : neighborIndices) {
@@ -278,22 +282,23 @@ public class World implements WorldModel, GameModelApi {
         unvisited.add(neighborIdx);
       }
     }
-    
+
     if (!unvisited.isEmpty()) {
-      // Push unvisited neighbors onto stack (in reverse order for consistent traversal)
+      // Push unvisited neighbors onto stack (in reverse order for consistent
+      // traversal)
       for (int i = unvisited.size() - 1; i >= 0; i--) {
         int neighborIdx = unvisited.get(i);
         dfsStack.push(neighborIdx);
         dfsVisited.add(neighborIdx);
       }
-      
+
       // Move pet to the top of the stack
       int nextIdx = dfsStack.peek();
       pet.setCurrentSpaceIndex(nextIdx);
     } else {
       // No unvisited neighbors, backtrack
       dfsStack.pop();
-      
+
       if (!dfsStack.isEmpty()) {
         int nextIdx = dfsStack.peek();
         pet.setCurrentSpaceIndex(nextIdx);
@@ -358,6 +363,7 @@ public class World implements WorldModel, GameModelApi {
     // Check if target is dead
     if (!target.isAlive()) {
       gameOver = true;
+      winnerName = playerName;
       return String.format("%s WINS! \n%s killed %s with %s for %d damage!\nThe target is dead!",
           playerName, playerName, target.getName(),
           weaponUsed != null ? weaponUsed.getName() : "a poke in the eye", damage);
@@ -466,13 +472,19 @@ public class World implements WorldModel, GameModelApi {
   }
 
   @Override
-  public void addPlayer(String name, int startSpaceIndex, boolean computerControlled,
+  public void addPlayer(String nameParam, int startSpaceIndex, boolean computerControlled,
       int capacity) {
-    Objects.requireNonNull(name, "Player name cannot be null");
+    Objects.requireNonNull(nameParam, "Player name cannot be null");
 
-    if (name.trim().isEmpty()) {
+    if (nameParam.trim().isEmpty()) {
       throw new IllegalArgumentException("Player name cannot be empty");
     }
+
+    if (players.size() >= 10) {
+      throw new IllegalArgumentException(
+          "Maximum number of players (10) reached. Cannot add more players.");
+    }
+    // ==========================================
 
     if (startSpaceIndex < 0 || startSpaceIndex >= spaces.size()) {
       throw new IllegalArgumentException(String.format(
@@ -485,13 +497,13 @@ public class World implements WorldModel, GameModelApi {
 
     // Check for duplicate names
     for (Iplayer p : players) {
-      if (p.getName().equalsIgnoreCase(name)) {
-        throw new IllegalArgumentException("Player with name '" + name + "' already exists");
+      if (p.getName().equalsIgnoreCase(nameParam)) {
+        throw new IllegalArgumentException("Player with name '" + nameParam + "' already exists");
       }
     }
 
-    Iplayer player = computerControlled ? new ComputerPlayer(name, startSpaceIndex, capacity)
-        : new Player(name, startSpaceIndex, capacity);
+    Iplayer player = computerControlled ? new ComputerPlayer(nameParam, startSpaceIndex, capacity)
+        : new Player(nameParam, startSpaceIndex, capacity);
     players.add(player);
   }
 
@@ -604,7 +616,7 @@ public class World implements WorldModel, GameModelApi {
     if (target.getCurrentSpaceIndex() == currentIdx) {
       sb.append(String.format("%s is here! (Health: %d)\n", target.getName(), target.getHealth()));
     }
-    
+
     // Pet in current space
     if (pet.getCurrentSpaceIndex() == currentIdx) {
       sb.append(String.format("  🐾 %s is here!\n", pet.getName()));
@@ -614,14 +626,14 @@ public class World implements WorldModel, GameModelApi {
     sb.append("\nNeighboring Spaces:\n");
     List<Integer> neighbors = neighborsOf(currentIdx);
     Set<Integer> visible = visibleFrom(currentIdx);
-    
+
     if (neighbors.isEmpty()) {
       sb.append("  (no neighbors)\n");
     } else {
       for (int neighborIdx : neighbors) {
         Space neighborSpace = spaces.get(neighborIdx);
         sb.append(String.format("  • %s [%d]", neighborSpace.getName(), neighborIdx));
-        
+
         // Check if we can see into this neighbor
         if (pet.getCurrentSpaceIndex() == neighborIdx) {
           // Pet blocks view
@@ -629,22 +641,19 @@ public class World implements WorldModel, GameModelApi {
         } else if (visible.contains(neighborIdx)) {
           // Can see inside
           sb.append(":");
-          
+
           // Items in neighbor
-          List<String> neighborItems = items.stream()
-              .filter(it -> it.getRoomIndex() == neighborIdx)
-              .map(Item::getName)
-              .collect(Collectors.toList());
-          
+          List<String> neighborItems = items.stream().filter(it -> it.getRoomIndex() == neighborIdx)
+              .map(Item::getName).collect(Collectors.toList());
+
           // Players in neighbor
           List<String> neighborPlayers = players.stream()
-              .filter(p -> p.getCurrentSpaceIndex() == neighborIdx)
-              .map(Iplayer::getName)
+              .filter(p -> p.getCurrentSpaceIndex() == neighborIdx).map(Iplayer::getName)
               .collect(Collectors.toList());
-          
+
           // Target in neighbor
           boolean targetInNeighbor = target.getCurrentSpaceIndex() == neighborIdx;
-          
+
           List<String> contents = new ArrayList<>();
           if (!neighborItems.isEmpty()) {
             contents.add("Items: " + String.join(", ", neighborItems));
@@ -655,7 +664,7 @@ public class World implements WorldModel, GameModelApi {
           if (targetInNeighbor) {
             contents.add("Target: " + target.getName());
           }
-          
+
           if (contents.isEmpty()) {
             sb.append(" (empty)");
           } else {
@@ -664,7 +673,7 @@ public class World implements WorldModel, GameModelApi {
         } else {
           sb.append(" - Cannot see inside");
         }
-        
+
         sb.append("\n");
       }
     }
@@ -711,14 +720,12 @@ public class World implements WorldModel, GameModelApi {
     List<Integer> neighborIndices = neighborsOf(currentIdx);
 
     // PRIORITY 1: Attack if possible (same room as target and not seen)
-    if (player.getCurrentSpaceIndex() == target.getCurrentSpaceIndex()
-        && !isSeenByOthers(player)) {
-      
+    if (player.getCurrentSpaceIndex() == target.getCurrentSpaceIndex() && !isSeenByOthers(player)) {
+
       // Find highest damage weapon
       Item bestWeapon = player.getItems().stream()
-          .max((a, b) -> Integer.compare(a.getDamage(), b.getDamage()))
-          .orElse(null);
-      
+          .max((a, b) -> Integer.compare(a.getDamage(), b.getDamage())).orElse(null);
+
       if (bestWeapon != null) {
         return attackTarget(playerName, bestWeapon.getName());
       } else {
@@ -726,15 +733,14 @@ public class World implements WorldModel, GameModelApi {
         return attackTarget(playerName, null);
       }
     }
-    
+
     // PRIORITY 2: Move or pickup (existing logic)
     // 50% chance to move if there are neighbors
     if (random.nextDouble() < 0.5 && !neighborIndices.isEmpty()) {
       int randomNeighborIdx = neighborIndices.get(random.nextInt(neighborIndices.size()));
       player.setCurrentSpaceIndex(randomNeighborIdx);
-      return String.format("[AI] %s moved to %s", 
-                          playerName, 
-                          spaces.get(randomNeighborIdx).getName());
+      return String.format("[AI] %s moved to %s", playerName,
+          spaces.get(randomNeighborIdx).getName());
     }
 
     // Try to pick up an item if capacity allows
@@ -743,10 +749,8 @@ public class World implements WorldModel, GameModelApi {
         if (item.getRoomIndex() == currentIdx) {
           player.addItem(item);
           item.setRoomIndex(-1);
-          return String.format("[AI] %s picked up %s (damage: %d)", 
-                              playerName, 
-                              item.getName(),
-                              item.getDamage());
+          return String.format("[AI] %s picked up %s (damage: %d)", playerName, item.getName(),
+              item.getDamage());
         }
       }
     }
@@ -805,13 +809,13 @@ public class World implements WorldModel, GameModelApi {
     File outputFile = new File(filename);
     ImageIO.write(img, "png", outputFile);
   }
-  
+
   @Override
   public ActionResult executeAction(String playerName, String actionType, String parameter) {
     try {
       String message;
       boolean isTurn = true;
-      
+
       switch (actionType.toLowerCase()) {
         case "move":
           message = movePlayer(playerName, parameter);
@@ -831,9 +835,9 @@ public class World implements WorldModel, GameModelApi {
         default:
           return new ActionResult(false, "Unknown action: " + actionType, false);
       }
-      
+
       return new ActionResult(true, message, isTurn);
-      
+
     } catch (IllegalArgumentException | IllegalStateException e) {
       return new ActionResult(false, "Error: " + e.getMessage(), false);
     }
@@ -842,28 +846,18 @@ public class World implements WorldModel, GameModelApi {
   @Override
   public GameState getGameState() {
     if (players.isEmpty()) {
-      return new GameState(
-          "", false, 0, "", 0,
-          target.getHealth(), target.getCurrentSpaceIndex(),
-          pet.getCurrentSpaceIndex(), gameOver, ""
+      return new GameState("", false, 0, "", 0, target.getHealth(), target.getCurrentSpaceIndex(),
+          pet.getCurrentSpaceIndex(), gameOver, winnerName // ← 改这里
       );
     }
-    
+
     Iplayer current = players.get(currentPlayerIndex);
     Space currentSpace = spaces.get(current.getCurrentSpaceIndex());
-    
-    return new GameState(
-        current.getName(),
-        current.isComputerControlled(),
-        current.getCurrentSpaceIndex(),
-        currentSpace.getName(),
-        currentPlayerIndex,
-        target.getHealth(),
-        target.getCurrentSpaceIndex(),
-        pet.getCurrentSpaceIndex(),
-        gameOver,
-        gameOver ? "Game Over" : ""
-    );
+
+    return new GameState(current.getName(), current.isComputerControlled(),
+        current.getCurrentSpaceIndex(), currentSpace.getName(), currentPlayerIndex,
+        target.getHealth(), target.getCurrentSpaceIndex(), pet.getCurrentSpaceIndex(), gameOver,
+        winnerName);
   }
 
   @Override
@@ -948,5 +942,4 @@ public class World implements WorldModel, GameModelApi {
         .orElseThrow(() -> new IllegalArgumentException("Player not found: " + name));
   }
 
-  
 }
