@@ -1,27 +1,31 @@
-# Kill Dr Lucky – Interactive Game with Pet and Attack System (Milestone 3)
+# Kill Dr Lucky – Graphical User Interface (Milestone 4)
 
 ## 1. Overview
 
-This milestone completes the Kill Doctor Lucky game by implementing the full gameplay mechanics, including combat, pet behavior, and win conditions. The system follows the Model–View–Controller (MVC) architecture with the Command design pattern for extensible action handling.
+This milestone completes the Kill Doctor Lucky game by implementing a full **graphical user interface (GUI)** using Java Swing. The game maintains all features from previous milestones while adding an intuitive point-and-click interface with keyboard shortcuts. The system continues to follow the Model–View–Controller (MVC) architecture with clear separation between layers.
 
-### New Features in Milestone 3
+### New Features in Milestone 4
 
-- **Pet System**: The target character's pet affects visibility and can be moved by players
-- **Attack Mechanics**: Players can attempt to kill the target using items or by "poking in the eye"
-- **Win Conditions**: Game ends when target is killed or maximum turns are reached
-- **Enhanced AI**: Computer-controlled players now intelligently attack when possible
-- **Improved Visibility**: Look around command shows detailed information about neighboring spaces
-- **Extra Credit**: Pet automatically wanders using depth-first traversal (DFS)
+- **Welcome Screen**: Displays game title, creator credits, and external resources
+- **Interactive GUI**: Point-and-click interface with visual world representation
+- **Menu System**: JMenu for starting new games, restarting, and quitting
+- **Graphical World Map**: Visual representation of all spaces with overlaid characters
+- **Mouse Controls**: Click on spaces to move, click on players to view information
+- **Keyboard Shortcuts**: P (pickup), L (look), A (attack), M (move pet)
+- **Scrollable View**: Supports large worlds exceeding screen size
+- **Real-time Updates**: Status bar shows current player, location, and target health
+- **Dual Mode Support**: Both text-based and GUI modes available
 
 ### Core Gameplay
 
-Players take turns performing one of the following actions:
+Players interact through the GUI by:
 
-- **Moving** to a neighboring space
-- **Picking up** items from their current location
-- **Looking around** to observe surroundings and neighboring spaces
-- **Attacking** the target character (succeeds only if unseen by others)
-- **Moving the pet** to a specified space (affects visibility)
+- **Clicking** on neighboring spaces to move
+- **Clicking** on player icons to view detailed information
+- **Pressing P** to pick up items in current space
+- **Pressing L** to look around and see neighboring spaces
+- **Pressing A** to attack the target (when in same space)
+- **Pressing M** to move the pet to a different space
 
 The game ends when:
 - A player successfully kills the target character (that player wins)
@@ -35,49 +39,46 @@ The game ends when:
 
 | Layer          | Components                                                                                          | Description                                                                                  |
 | -------------- | --------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| **Model**      | `World`, `Room`, `Item`, `Target`, `Pet`, `Player`, `ComputerPlayer`                                | Represents and updates game state. Implements `GameModelApi` and `WorldModel`.               |
-| **Controller** | `GameController`, `Command` implementations                                                         | Handles I/O, manages turns, creates and executes Command objects.                            |
-| **Commands**   | `MoveCommand`, `PickUpCommand`, `LookAroundCommand`, `AttackCommand`, `MovePetCommand`, etc.        | Encapsulates player actions following the Command pattern.                                   |
-| **View**       | Console output (integrated in controller)                                                           | Text-based display; graphical view planned for future milestone.                             |
-| **Utility**    | `WorldParser`, `Rect`, `Point`, `VisibilityStrategy`, `AxisAlignedVisibility`, `AttackStatus`       | Parsing, geometry, visibility calculation, and attack result enumeration.                    |
+| **Model**      | `World`, `Room`, `Item`, `Target`, `Pet`, `Player`, `ComputerPlayer`, `ActionResult`, `GameState`   | Represents game state and logic. Returns structured results instead of exposing objects.     |
+| **View**       | `GameView`, `WorldPanel`, `GameViewInterface`, `WorldPanelInterface`                                | Swing-based GUI with welcome screen, game panel, and message display.                        |
+| **Controller** | `GuiController`, `ControllerInterface`                                                               | Handles user input events, coordinates Model and View, manages game flow.                    |
+| **Utility**    | `WorldParser`, `Rect`, `Point`, `VisibilityStrategy`, `AxisAlignedVisibility`, `AttackStatus`       | Parsing, geometry, visibility calculation, and enumerations.                                  |
 
 ### Design Patterns Used
 
-- **Model–View–Controller (MVC)** – Separates game logic from user interaction
-- **Command Pattern** – Encapsulates actions as objects for flexibility and extensibility
-- **Strategy Pattern** – Enables interchangeable visibility algorithms via `VisibilityStrategy`
-- **Factory Pattern** – `WorldParser` creates game world from configuration file
-- **Facade Pattern** – `GameModelApi` provides simplified interface to complex `World` model
+- **Model–View–Controller (MVC)** – Complete separation between game logic, display, and control flow
+- **Strategy Pattern** – Visibility algorithms via `VisibilityStrategy`
+- **Observer Pattern** – View observes Model through `ReadOnlyWorld` interface
+- **Dependency Inversion** – All layers depend on interfaces, not concrete implementations
+- **Information Hiding** – Model returns `ActionResult` and `GameState` instead of exposing internal objects
 
 ---
 
 ## 3. List of Features
 
-### Milestone 1 Features
-- Parse world specification file with rooms, items, and target
-- Display information about specific spaces
-- Generate graphical representation of the world map (PNG)
-- Compute space neighbors and visibility relationships
+### Milestone 1-3 Features (All Preserved)
+- Parse world specification file
+- Add multiple players (human and computer)
+- Move, pickup, look around mechanics
+- Pet system affecting visibility
+- Attack mechanics with visibility checking
+- Win conditions and turn limits
+- DFS pet wandering
 
-### Milestone 2 Features
-- Add multiple players (human and computer-controlled)
-- Move players between neighboring spaces
-- Pick up items with capacity limits
-- Look around to see current and visible spaces
-- Display player information
-- Automatic AI decision-making
-- Turn-based gameplay with maximum turn limit
-
-### Milestone 3 Features (New)
-- **Pet system**: Target's pet blocks visibility of its current space
-- **Player can move pet**: Strategic gameplay by relocating the pet
-- **Attack mechanics**: Attempt to kill target with items or by poking
-- **Visibility-based combat**: Attacks fail if seen by other players
-- **Evidence system**: Used weapons are removed from the game
-- **Win conditions**: Game ends when target dies or turns run out
-- **Enhanced AI**: Computer players intelligently attack when possible
-- **Improved look around**: Shows detailed information about neighboring spaces
-- **Extra Credit**: Pet wanders automatically using DFS traversal
+### Milestone 4 Features (New)
+- **Welcome Screen**: Credits creator and lists external resources
+- **JMenu System**: File menu with New Game, Restart, and Quit options
+- **Graphical World Map**: Visual representation with colored spaces
+- **Character Overlays**: Target and players (up to 10) displayed on map
+- **Mouse Click Movement**: Click neighboring spaces to move
+- **Player Information**: Click player icons to view details
+- **Keyboard Shortcuts**: P, L, A, M keys for actions
+- **Scrollable Viewport**: Handles worlds larger than screen
+- **Status Bar**: Shows current turn, player, location, and target health
+- **Message Log**: Scrollable text area displaying action results
+- **Resizable Window**: Maintains layout from 300x300 to full screen
+- **Error Dialogs**: User-friendly error messages with retry options
+- **Input Validation**: Prevents invalid player counts, duplicate names, etc.
 
 ---
 
@@ -91,15 +92,15 @@ The game ends when:
 
 ### Creating the JAR File (Eclipse)
 
-1. **Ensure Driver.java can run**:
-   - Right-click `Driver.java` → **Run As** → **Java Application**
+1. **Ensure GuiDriver.java can run**:
+   - Right-click `GuiDriver.java` → **Run As** → **Java Application**
    
 2. **Export as Runnable JAR**:
    - Right-click project → **Export...**
    - Select **Java** → **Runnable JAR file** → **Next**
    
 3. **Configure export**:
-   - Launch configuration: `Driver - KillDrLucky`
+   - Launch configuration: `GuiDriver - KillDrLucky`
    - Export destination: `/path/to/KillDrLucky.jar`
    - Library handling: **Extract required libraries into generated JAR**
    - Click **Finish**
@@ -111,642 +112,943 @@ The game ends when:
 
 ### Command-Line Execution
 
-#### Interactive Mode (Manual Input)
+#### GUI Mode (Default)
+
+**If JAR is in project root**:
 ```bash
 java -jar KillDrLucky.jar <worldFile> <maxTurns>
 ```
 
-**Example**:
+**If JAR is in res/ folder** (recommended):
 ```bash
-java -jar KillDrLucky.jar mansion.txt 100
+java -jar res/KillDrLucky.jar <worldFile> <maxTurns>
 ```
 
-Then manually enter commands:
-```
-add Alice 0 false 5
-add Bot 5 true 3
-start
-look Alice
-move Alice Billiard Room
-attack Alice Revolver
-quit
-```
-
-#### Batch Mode (Input from File)
+**Examples**:
 ```bash
-java -jar KillDrLucky.jar <worldFile> <maxTurns> < input.txt > output.txt
+# JAR in root directory
+java -jar KillDrLucky.jar mansion.txt 50
+
+# JAR in res/ folder (your setup)
+java -jar res/KillDrLucky.jar res/mansion.txt 50
+
+# JAR in res/, using relative path for world file
+java -jar res/KillDrLucky.jar mansion.txt 50
+
+# With explicit paths
+java -jar res/KillDrLucky.jar res/mansion.txt 100
 ```
 
-**Example**:
+**What happens**:
+1. GUI window launches
+2. Welcome screen displays with credits
+3. Click "Start New Game" to begin
+4. Dialogs prompt for player setup
+5. Game screen appears with interactive world map
+
+#### Text-Based Mode (Legacy, Optional)
 ```bash
-# Windows
-java -jar KillDrLucky.jar mansion.txt 100 < input_basics.txt > run_basics.txt 2>&1
+# Run text version (if you want the old console mode)
+java -cp res/KillDrLucky.jar killdrlucky.Driver res/mansion.txt 50
 
-# Linux/Mac
-java -jar KillDrLucky.jar mansion.txt 100 < input_basics.txt > run_basics.txt 2>&1
+# Or if JAR is in root
+java -cp KillDrLucky.jar killdrlucky.Driver mansion.txt 50
 ```
-
-#### Interactive with Output Logging
-```bash
-# Linux/Mac (using tee)
-java -jar KillDrLucky.jar mansion.txt 100 | tee run_basics.txt
-
-# Windows PowerShell
-java -jar KillDrLucky.jar mansion.txt 100 | Tee-Object run_basics.txt
-```
-
-This allows you to see output on screen while simultaneously saving to a file.
 
 ### Arguments
 
-| Argument       | Description                                                    |
-| -------------- | -------------------------------------------------------------- |
-| `<worldFile>`  | Path to world specification file (e.g., `mansion.txt`)         |
-| `<maxTurns>`   | Maximum number of turns before game automatically ends         |
+| Argument       | Description                                                    | Default          |
+| -------------- | -------------------------------------------------------------- | ---------------- |
+| `<worldFile>`  | Path to world specification file (e.g., `mansion.txt` or `res/mansion.txt`) | `res/mansion.txt`|
+| `<maxTurns>`   | Maximum number of turns before game ends                       | `50`             |
+
+### File Path Notes
+
+- If JAR is in `res/` folder, use `java -jar res/KillDrLucky.jar`
+- World file path can be relative (`mansion.txt`) or absolute (`res/mansion.txt`)
+- Recommended structure:
+  ```
+  project/
+  ├── res/
+  │   ├── KillDrLucky.jar
+  │   └── mansion.txt
+  ```
+  Run with: `java -jar res/KillDrLucky.jar res/mansion.txt 50`
 
 ---
 
-## 5. Available Commands
+## 5. GUI User Guide
 
-### Setup Phase Commands
+### Starting a New Game
 
-| Command                                | Description                          | Example                    |
-| -------------------------------------- | ------------------------------------ | -------------------------- |
-| `add <name> <start> <isAI> <capacity>` | Add a player to the game             | `add Alice 0 false 5`      |
-| `start`                                | Begin the game                       | `start`                    |
-| `help`                                 | Display command reference            | `help`                     |
+1. **Launch Application**: Run the JAR file
+2. **Welcome Screen**: Read game information and credits
+3. **Click "Start New Game"** or use File → New Game
+4. **Enter Player Count**: Input number of players (1-10)
+5. **Setup Each Player**:
+   - Enter player name
+   - Select starting space (0 to max space index)
+   - Choose human or computer controlled
+6. **Game Begins**: World map appears with all players
 
-### Turn Action Commands (Consume a Turn)
+### Playing the Game
 
-| Command                     | Description                                | Example                  |
-| --------------------------- | ------------------------------------------ | ------------------------ |
-| `move <player> <dest>`      | Move player to neighboring space           | `move Alice Kitchen`     |
-| `pickup <player> <item>`    | Pick up an item from current space         | `pickup Alice Knife`     |
-| `look <player>`             | Look around current and neighboring spaces | `look Alice`             |
-| `attack <player> [item]`    | Attempt to kill the target                 | `attack Alice Revolver`  |
-| `movepet <spaceName>`       | Move the pet to specified space            | `movepet Billiard Room`  |
+#### Mouse Controls
+- **Click neighboring space**: Move current player to that space
+- **Click player icon**: View player's detailed information
 
-### Information Commands (Don't Consume Turn)
+#### Keyboard Controls
+- **P key**: Pick up an item in current space (shows item selection dialog)
+- **L key**: Look around current and neighboring spaces
+- **A key**: Attack the target (only when in same space)
+- **M key**: Move the pet to a different space
 
-| Command                | Description                   | Example            |
-| ---------------------- | ----------------------------- | ------------------ |
-| `describe <player>`    | Show player information       | `describe Alice`   |
-| `space <roomName>`     | Show room information         | `space Armory`     |
-| `save [filename]`      | Save world map as PNG         | `save map.png`     |
+#### Menu Options
+- **File → New Game (New World)**: Start fresh with different world file
+- **File → Restart Game (Current World)**: Restart with same world, new players
+- **File → Quit**: Exit application
 
-### Other Commands
+### Understanding the Display
 
-| Command | Description    |
-| ------- | -------------- |
-| `help`  | Show help menu |
-| `quit`  | End game       |
+#### World Map
+- **Colored rectangles**: Represent spaces/rooms
+- **Space labels**: Show room name and index number [0]
+- **Red circle with 'T'**: Target character (Dr. Lucky)
+- **Green circles**: Human players (labeled with first initial)
+- **Blue circles**: Computer players (labeled with first initial)
+- **Multiple players in same space**: Offset horizontally
 
----
+#### Status Bar (Top)
+Shows: `Turn X/Y | Player: Name (Type) | Location: SpaceName | Target Health: Z`
 
-## 6. Example Runs
-
-Three example run files are provided to demonstrate all required scenarios:
-
-### File 1: `run_basics.txt`
-
-**Purpose**: Demonstrates main gameplay features and scenarios
-
-**Generated using**:
-```bash
-java -jar KillDrLucky.jar mansion.txt 100 < input_basics.txt > run_basics.txt
-```
-
-**Scenarios demonstrated**:
-- ✅ Pet blocking visibility of neighboring spaces
-- ✅ Player moving the pet to a different location
-- ✅ Human player making attack attempts (both failed and successful)
-- ✅ Human player winning by killing the target
-- ✅ Extra Credit: Pet wandering following DFS traversal pattern
-
-**Input file** (`input_basics.txt`):
-```
-add Alice 0 false 5
-add Bob 1 false 5
-add AIBot 8 true 5
-start
-look Alice
-space Armory
-movepet Billiard Room
-look Alice
-move Alice Drawing Room
-look Alice
-move Alice Foyer
-look Alice
-move Bob Armory
-attack Alice
-move Bob Billiard Room
-attack Alice
-quit
-```
-
-### File 2: `run_ai_wins.txt`
-
-**Purpose**: Demonstrates AI player attacking and winning
-
-**Generated using**:
-```bash
-java -jar KillDrLucky.jar mansion.txt 200 < input_basics.txt > run_basics.txt
-```
-
-**Scenarios demonstrated**:
-- ✅ Computer-controlled player making attack attempts
-- ✅ Computer-controlled player winning the game
-
-**Input file** (`input_basics.txt`):
-```
-add SuperBot 0 true 10
-start
-quit
-```
-
-### File 3: `run_target_escapes.txt`
-
-**Purpose**: Demonstrates target escaping when maximum turns reached
-
-**Generated using**:
-```bash
-java -jar KillDrLucky.jar mansion.txt 3 < input_escape.txt > run_target_escapes.txt
-```
-
-**Scenarios demonstrated**:
-- ✅ Target character escaping with his life (game ending due to turn limit)
-
-**Input file** (`input_escape.txt`):
-```
-add Alice 10 false 3
-start
-look Alice
-look Alice
-quit
-```
+#### Message Area (Bottom)
+- Scrollable log of all actions and results
+- Color-coded feedback (success/error messages)
+- Action history for reference
 
 ---
 
-## 7. Game Rules
+## 6. Available Actions
 
-### Attack Mechanics
+### Movement
+- **How**: Click on a neighboring space
+- **Requirements**: Must be adjacent (shares edge)
+- **Result**: Player moves to new space, turn advances
 
-Players can attempt to kill the target character by:
+### Pick Up Item
+- **How**: Press P key
+- **Requirements**: Items must exist in current space, inventory not full
+- **Result**: Dialog shows available items, selected item added to inventory
 
-1. **Using an item**: Deals damage equal to the item's damage value
-2. **Poking in the eye**: Deals 1 damage (when no item is specified)
+### Look Around
+- **How**: Press L key
+- **Requirements**: None
+- **Result**: Message area shows detailed information about current and visible neighboring spaces
 
-**Attack conditions**:
-- Player must be in the **same space** as the target
-- Player must **not be seen** by any other player (in same or visible spaces)
-- Used items are **removed** from the game as evidence
+### Attack Target
+- **How**: Press A key
+- **Requirements**: Must be in same space as target, not seen by others
+- **Result**: Dialog prompts for weapon choice, damage dealt if successful
 
-**Attack outcomes**:
-- ✅ **Success**: Damage is dealt, item is removed
-- ❌ **Seen by others**: Attack is stopped, no damage
-- ❌ **Not in same space**: Cannot attack from a distance
+### Move Pet
+- **How**: Press M key
+- **Requirements**: None
+- **Result**: Prompt for space name, pet moves to specified location
 
-### Pet Mechanics
-
-The target character's pet (`Fortune the Cat` in the mansion):
-
-- **Starts** in the same space as the target (space 0)
-- **Blocks visibility**: Spaces containing the pet cannot be seen by neighbors
-- **Can be moved** by players as a turn action
-- **Wanders automatically** (Extra Credit): Follows DFS traversal after each turn
-
-### Win Conditions
-
-- **Player wins**: Successfully kills the target (health reaches 0)
-- **Target escapes**: Maximum turns reached without target being killed (no winner)
-
-### AI Behavior
-
-Computer-controlled players:
-1. **Priority 1**: Attack target if in same room and not seen by others (uses highest damage item)
-2. **Priority 2**: Move to random neighboring space (50% chance)
-3. **Priority 3**: Pick up items if capacity allows (50% chance)
-4. **Default**: Look around
+### View Player Info
+- **How**: Click on player icon on map
+- **Requirements**: None
+- **Result**: Player's information displayed in message area
 
 ---
 
-## 8. World File Format
+## 7. Model Refactoring (Milestone 3 → Milestone 4)
+
+### Changes Made to Model
+
+To separate the text-based controller logic from the model, we moved all game state validation and action execution logic into the model layer. Previously, the `GameController` handled command parsing and directly called model methods like `movePlayer()`, `pickUpItem()`, `lookAround()`, and `attackTarget()` which returned simple strings. The controller was responsible for determining turn advancement and checking win conditions. 
+
+Now, we've enhanced the model with new methods that return structured `ActionResult` objects: `executeAction()` which handles all action types internally. We also added turn management methods `getGameState()` and `advanceTurn()` to the `GameModelApi` interface. The model now maintains a `currentPlayerIndex` to track whose turn it is and provides complete game state management through the immutable `GameState` class. This refactoring allows the same model to work with both text-based and GUI controllers without code duplication, as all game logic resides in the model layer where it belongs.
+
+### New Model Components
+
+#### `ActionResult` Class
+Structured result object returned by all game actions:
+- `success`: Whether action succeeded
+- `message`: User-friendly result description
+- `isTurnAction`: Whether action consumes a turn
+
+#### `GameState` Class
+Immutable snapshot of current game state:
+- Current player information (name, type, location)
+- Target information (location, health)
+- Pet location
+- Turn count
+- Game over status and winner
+
+These classes prevent the Controller and View from accessing internal Model objects directly.
+
+---
+
+## 8. GUI Design
+
+### Welcome Screen Layout
+
 ```
-<rows> <cols> <worldName>
-<targetHealth> <targetName>
-<petName>
-<numberOfSpaces>
-<ulRow> <ulCol> <lrRow> <lrCol> <spaceName>
-...
-<numberOfItems>
-<spaceIndex> <damage> <itemName>
-...
+┌──────────────────────────────────────┐
+│                                      │
+│     KILL DOCTOR LUCKY                │
+│   A Strategic Board Game             │
+│                                      │
+│   Created by: [Your Name]            │
+│                                      │
+│   Resources Used:                    │
+│   • Java Swing GUI Framework         │
+│   • MVC Design Pattern               │
+│                                      │
+│      [Start New Game]                │
+│                                      │
+│   Click: Move | P: Pick | L: Look   │
+│   A: Attack | M: Move pet            │
+│                                      │
+└──────────────────────────────────────┘
 ```
 
-**Example** (`mansion.txt`):
+### Main Game Screen Layout
+
 ```
-36 30 Doctor Lucky's Mansion
-2 Doctor Lucky
-Fortune the Cat
-21
-22 19 23 26 Armory
-16 21 21 28 Billiard Room
-...
-20
-8 3 Crepe Pan
-4 2 Letter Opener
-...
+┌──────────────────────────────────────────────────┐
+│ File  Help                                       │
+├──────────────────────────────────────────────────┤
+│ Turn 5/50 | Player: Alice (Human) | Location:    │
+│ Kitchen | Target Health: 45                      │
+├──────────────────────────────────────────────────┤
+│                                                  │
+│  ┌────────────────────────────────────────┐    │
+│  │         Game World (Scrollable)        │    │
+│  │                                        │    │
+│  │   ┌─────────┬─────────┬─────────┐    │    │
+│  │   │Kitchen  │ Hallway │ Library │    │    │
+│  │   │  [0]    │   [1]   │   [2]   │    │    │
+│  │   │  A T    │         │    B    │    │    │
+│  │   └─────────┴─────────┴─────────┘    │    │
+│  │                                        │    │
+│  └────────────────────────────────────────┘    │
+│                                                  │
+├──────────────────────────────────────────────────┤
+│ Messages:                                        │
+│ Alice moved to Kitchen                           │
+│ Bob picked up Knife                              │
+│ Alice attacked target for 3 damage!              │
+└──────────────────────────────────────────────────┘
+
+Legend: T=Target, A/B=Players (Green=Human, Blue=AI)
 ```
 
 ---
 
 ## 9. Class Diagram Summary
 
-### Model Classes
-- **World**: Central game state manager, implements all game logic
-- **Player** / **ComputerPlayer**: Data containers for player state
-- **Target**: Represents Dr. Lucky with health tracking
-- **Pet**: Target's pet that affects visibility
-- **Room**: Represents individual spaces with geometric areas
-- **Weapon**: Implements Item interface with damage values
+### Model Layer (Enhanced)
+- **World**: Implements `GameModelApi`, `ReadOnlyWorld`, `WorldModel`
+  - New field: `currentPlayerIndex` (tracks turn)
+  - New field: `winnerName` (tracks winner)
+  - New method: `executeAction()` (unified action handler)
+  - New method: `getGameState()` (returns state snapshot)
+  - New method: `advanceTurn()` (advances turn counter)
+- **ActionResult**: Encapsulates action execution results
+- **GameState**: Immutable game state snapshot
 
-### Command Classes (New in Milestone 3)
-- **Command**: Interface defining execute() and isTurnAction()
-- **MoveCommand**: Encapsulates player movement
-- **PickUpCommand**: Encapsulates item pickup
-- **LookAroundCommand**: Encapsulates observation action
-- **AttackCommand**: Encapsulates attack attempts
-- **MovePetCommand**: Encapsulates pet relocation
-- **AddPlayerCommand**: Encapsulates player creation
-- **DescribePlayerCommand** / **DescribeSpaceCommand**: Information queries
+### View Layer (New)
+- **GameViewInterface**: Defines view contract
+  - `setClickListener()`, `setKeyListener()`
+  - `updateStatus()`, `addMessage()`
+  - `refresh()`, `promptInput()`, `showMessage()`
+- **GameView**: Main JFrame implementation
+  - Welcome panel with CardLayout
+  - Game panel with world rendering
+  - Status bar and message area
+  - Menu bar with File menu
+- **WorldPanelInterface**: Defines panel contract
+  - `getSpaceAt()`, `refresh()`
+- **WorldPanel**: JPanel for world rendering
+  - Draws spaces, target, and players
+  - Handles coordinate translation
+  - Supports scrolling for large worlds
 
-### Controller
-- **GameController**: Manages game flow using Command pattern with factory method
+### Controller Layer (Redesigned)
+- **ControllerInterface**: Defines controller contract
+  - `handleClick()`, `handleKey()`
+  - `executeAction()`, `updateView()`
+- **GuiController**: Implements Features interface
+  - Registers event listeners
+  - Converts user actions to model calls
+  - Manages game flow and turn progression
+  - Auto-plays computer turns with Timer
+
+### Interface Dependencies
+
+```
+Model (GameModelApi) ← Controller → View (GameViewInterface)
+        ↓                               ↓
+   ReadOnlyWorld                   WorldPanel
+```
+
+- Model **does not** depend on View or Controller
+- Controller depends on **interfaces** only
+- View observes Model through **ReadOnlyWorld** (read-only access)
 
 ---
 
-## 10. Testing
+## 10. How It Works
+
+### Game Startup Flow
+
+```
+1. GuiDriver.main()
+   ↓
+2. Parse world file → Create World model
+   ↓
+3. Create GameView (shows welcome screen)
+   ↓
+4. Create GuiController(model, view, maxTurns)
+   ↓
+5. Controller registers listeners on view
+   ↓
+6. User clicks "Start New Game"
+   ↓
+7. Dialogs prompt for player setup
+   ↓
+8. View switches to game screen
+   ↓
+9. Game begins with first player's turn
+```
+
+### Turn Execution Flow
+
+```
+Human Player Turn:
+  User clicks space → MouseListener → handleClick()
+    ↓
+  Controller validates neighbor → model.executeAction("move", ...)
+    ↓
+  Model returns ActionResult → Controller displays message
+    ↓
+  If turn action: moveTarget(), movePetDfs(), advanceTurn()
+    ↓
+  Controller calls updateView() → refresh display
+    ↓
+  Check if next player is AI → auto-execute if so
+
+Computer Player Turn:
+  Controller detects AI player → schedules Timer (1 second delay)
+    ↓
+  Timer fires → model.autoAction()
+    ↓
+  Display AI action result → advance turn
+    ↓
+  Chain to next AI player if applicable
+```
+
+### Data Flow Example: Moving a Player
+
+```
+1. User clicks neighboring space at pixel (150, 200)
+2. GamePanel.getSpaceAt(150, 200) → returns spaceIndex=5
+3. GuiController.handleClick(150, 200)
+4. Controller gets GameState (doesn't access Player object directly)
+5. Controller validates: neighborsOf(currentPlayerSpace).contains(5)
+6. Controller calls: model.executeAction("Alice", "move", "Kitchen")
+7. Model executes: movePlayer() internally
+8. Model returns: ActionResult(success=true, "Alice moved to Kitchen", isTurnAction=true)
+9. Controller updates view: view.addMessage(result.message)
+10. Controller advances game: moveTarget(), movePetDfs(), advanceTurn()
+11. View refreshes: worldPanel.repaint()
+```
+
+---
+
+## 11. Key Design Decisions
+
+### Why ActionResult Instead of Returning Objects?
+
+**Problem**: Controller shouldn't directly access Player or Target objects (breaks encapsulation)
+
+**Solution**: Model returns `ActionResult` with:
+- Success/failure status
+- User-friendly message
+- Whether action consumed a turn
+
+**Benefits**:
+- Controller doesn't need to know internal Model structure
+- Easy to add new return information without changing interfaces
+- Type-safe communication between layers
+
+### Why GameState Instead of getCurrentPlayer()?
+
+**Problem**: Returning `Iplayer` object exposes mutable internal state
+
+**Solution**: Model returns immutable `GameState` snapshot with:
+- Player name, type, location (not the object itself)
+- Target/pet locations and health
+- Game status
+
+**Benefits**:
+- View/Controller cannot accidentally modify Model state
+- Clear data contract between layers
+- Thread-safe (immutable)
+
+### Why No Command Pattern in GUI Controller?
+
+**Text-based Controller** (Milestone 3):
+```
+"move Alice Kitchen" → Parse → CreateCommand → Execute
+```
+Needs Command pattern for parsing complex text
+
+**GUI Controller** (Milestone 4):
+```
+Click event → handleClick() → model.executeAction()
+```
+Direct event handling is simpler and more appropriate
+
+### GUI vs Text Mode Support
+
+Both modes supported through **same Model**:
+- `GameController` (text) → uses Commands
+- `GuiController` (GUI) → uses event handlers
+- Both use same `GameModelApi` interface
+
+---
+
+## 12. GUI Components
+
+### GameView Components
+
+| Component | Type | Purpose |
+|-----------|------|---------|
+| `welcomePanel` | JPanel | Shows title, credits, start button |
+| `gamePanel` | JPanel | Contains world rendering and status |
+| `worldPanel` | WorldPanel | Renders world map with characters |
+| `statusLabel` | JLabel | Displays current turn info |
+| `messageArea` | JTextArea | Scrollable action log |
+| `menuBar` | JMenuBar | File menu with New/Restart/Quit |
+
+### Layout Managers Used
+
+| Panel | Layout | Reason |
+|-------|--------|--------|
+| Main frame | CardLayout | Switch between welcome/game screens |
+| Welcome panel | GridBagLayout | Center components with spacing |
+| Game panel | BorderLayout | Status (North), World (Center), Messages (South) |
+| World panel | Custom painting | Precise control over world rendering |
+
+### Resizing Behavior
+
+- **Minimum size**: 300x300 pixels (enforced)
+- **World panel**: Uses preferred size based on world dimensions
+- **Scrolling**: Automatic when world exceeds viewport
+- **Layout**: BorderLayout ensures components resize proportionally
+
+---
+
+## 13. Testing
 
 ### Test Coverage
-- **Unit Tests**: Individual class methods (Player, Target, Pet, Room, etc.)
-- **Integration Tests**: Command execution, turn management, visibility with pet
-- **System Tests**: Complete gameplay scenarios
 
-### Key Test Areas
-- Player capacity enforcement
-- Attack visibility checking
-- Pet blocking line of sight
-- DFS traversal correctness
-- Win condition detection
-- Turn limit enforcement
+#### Model Tests (No Mocks)
+- `ActionResultTest`: 7 tests for ActionResult class
+- `GameStateTest`: 5 tests for GameState class
+- `WorldExecuteActionTest`: 11 tests for executeAction() method
+- `WorldGameStateTest`: 9 tests for getGameState() method
+- `WorldAdvanceTurnTest`: 6 tests for advanceTurn() method
+- `WorldPlayerLimitTest`: 5 tests for 10-player maximum
+- `WorldWinnerTrackingTest`: 3 tests for winner recording
 
----
+**Total Model Tests**: 46 tests
 
-## 11. Design Decisions
+#### Controller Tests (With Manual Mocks)
+- `MockGameModel`: Manual mock implementation of GameModelApi
+- `MockGameView`: Manual mock implementation of GameViewInterface
+- `MockWorldPanel`: Manual mock for WorldPanel
+- `GuiControllerManualMockTest`: Tests controller in isolation
 
-### Command Pattern Implementation
+**Total Controller Tests**: 10+ tests
 
-**Why Command Pattern?**
-- Decouples controller from specific action implementations
-- Makes adding new commands easy (just create new Command class and register in factory)
-- Enables future features like undo/redo or command logging
-- Simplifies testing (each command can be tested independently)
+#### View Tests
+Not required per assignment specifications.
 
-**How it works**:
-```
-User Input → Controller → Command Factory → Command Object → Model Method → Result
-```
+### Running Tests
 
-Example:
-```
-"attack Alice Knife" → createAttackCommand() → AttackCommand → model.attackTarget() → "⚔️ Alice attacked..."
-```
-
-### Pet Visibility Rules
-
-The pet makes its space **invisible to neighbors** (not visible spaces in general):
-- Space A is neighbor of Space B if they share an edge
-- If pet is in Space B, Space A cannot see into Space B
-- This is different from the axis-aligned visibility used for distant spaces
-
-### DFS Pet Wandering (Extra Credit)
-
-The pet follows a depth-first traversal pattern:
-1. Starts at space 0
-2. Explores one neighbor fully before moving to the next
-3. Backtracks when no unvisited neighbors remain
-4. Restarts from space 0 after visiting all spaces
-
-**Implementation**:
-- Uses a stack to track the traversal path
-- Maintains a visited set to avoid cycles
-- Moves automatically after each turn ends
-
----
-
-## 12. Generating Example Runs
-
-### Method 1: Manual Input with Console Save
-
-**In Eclipse**:
-1. Run → Run Configurations
-2. Set Arguments: `mansion.txt 100`
-3. Run the program
-4. Manually enter commands
-5. Right-click Console → Save Console Output → `run_basics.txt`
-
-**In Command Line**:
 ```bash
-# Linux/Mac
-java -jar KillDrLucky.jar mansion.txt 100 | tee run_basics.txt
+# Compile tests
+javac -cp .:junit-4.13.2.jar -d bin test/killdrlucky/*.java src/killdrlucky/*.java
 
-# Windows PowerShell  
-java -jar KillDrLucky.jar mansion.txt 100 | Tee-Object run_basics.txt
-```
+# Run all model tests
+java -cp bin:junit-4.13.2.jar:hamcrest-core-1.3.jar org.junit.runner.JUnitCore \
+  killdrlucky.ActionResultTest \
+  killdrlucky.GameStateTest \
+  killdrlucky.WorldExecuteActionTest \
+  killdrlucky.WorldGameStateTest \
+  killdrlucky.WorldAdvanceTurnTest \
+  killdrlucky.WorldPlayerLimitTest \
+  killdrlucky.WorldWinnerTrackingTest
 
-### Method 2: Automated Input from File (Recommended)
-
-**Create input files**:
-
-`input_basics.txt`:
-```
-add Alice 0 false 5
-add Bob 1 false 5
-add AIBot 8 true 5
-start
-look Alice
-space Armory
-movepet Billiard Room
-look Alice
-move Alice Drawing Room
-look Alice
-move Bob Armory
-attack Alice
-move Bob Billiard Room
-attack Alice
-quit
-```
-
-`input_ai_wins.txt`:
-```
-add SuperBot 0 true 10
-start
-quit
-```
-
-`input_escape.txt`:
-```
-add Alice 10 false 3
-start
-look Alice
-look Alice
-quit
-```
-
-**Generate output files**:
-```bash
-# Generate all three scenario files
-java -jar KillDrLucky.jar mansion.txt 100 < input_basics.txt > run_basics.txt 2>&1
-java -jar KillDrLucky.jar mansion.txt 200 < input_ai_wins.txt > run_ai_wins.txt 2>&1
-java -jar KillDrLucky.jar mansion.txt 3 < input_escape.txt > run_target_escapes.txt 2>&1
-```
-
-### Method 3: Batch Script (Most Efficient)
-
-**Windows** (`generate_runs.bat`):
-```batch
-@echo off
-echo Generating all example runs...
-java -jar KillDrLucky.jar mansion.txt 100 < input_basics.txt > run_basics.txt 2>&1
-java -jar KillDrLucky.jar mansion.txt 200 < input_ai_wins.txt > run_ai_wins.txt 2>&1
-java -jar KillDrLucky.jar mansion.txt 3 < input_escape.txt > run_target_escapes.txt 2>&1
-echo Done! Check run_*.txt files.
-pause
-```
-
-**Linux/Mac** (`generate_runs.sh`):
-```bash
-#!/bin/bash
-echo "Generating all example runs..."
-java -jar KillDrLucky.jar mansion.txt 100 < input_basics.txt > run_basics.txt 2>&1
-java -jar KillDrLucky.jar mansion.txt 200 < input_ai_wins.txt > run_ai_wins.txt 2>&1
-java -jar KillDrLucky.jar mansion.txt 3 < input_escape.txt > run_target_escapes.txt 2>&1
-echo "Done! Check run_*.txt files."
-```
-
-Run with:
-```bash
-# Windows
-generate_runs.bat
-
-# Linux/Mac
-chmod +x generate_runs.sh
-./generate_runs.sh
+# Run controller tests
+java -cp bin:junit-4.13.2.jar:hamcrest-core-1.3.jar org.junit.runner.JUnitCore \
+  killdrlucky.GuiControllerManualMockTest
 ```
 
 ---
 
-## 13. Example Run Scenarios
+## 14. Example Gameplay Scenarios
 
-### Scenario Coverage
+### Scenario 1: Human Player Wins
 
-The provided example runs demonstrate all required features:
-
-| Scenario | Description                                  | File                     |
-| -------- | -------------------------------------------- | ------------------------ |
-| 1        | Pet blocking visibility from neighbors       | `run_basics.txt`         |
-| 2        | Player moving the pet                        | `run_basics.txt`         |
-| 3        | Human player attacking target                | `run_basics.txt`         |
-| 4        | Computer player attacking target             | `run_ai_wins.txt`        |
-| 5        | Human player winning the game                | `run_basics.txt`         |
-| 6        | Computer player winning the game             | `run_ai_wins.txt`        |
-| 7        | Target escaping (max turns reached)          | `run_target_escapes.txt` |
-| 8        | Pet DFS wandering (Extra Credit)             | `run_basics.txt`         |
-
-### Sample Output Snippets
-
-**Pet blocking visibility**:
 ```
-look Alice
-═══════════════════════════════════════════
-👀 Looking around from: Armory
-═══════════════════════════════════════════
-
-🚪 Neighboring Spaces:
-  • Billiard Room [1] - 🐾 Cannot see inside (pet is blocking view)
+1. Start game with Alice (human) at space 0
+2. Click neighboring space to move toward target
+3. Press L to look around and locate target
+4. Navigate to target's space
+5. Press P to pick up a weapon
+6. Press A to attack with weapon
+7. Repeat attacks until target health reaches 0
+8. Game Over dialog: "Winner: Alice"
 ```
 
-**Player moving pet**:
+### Scenario 2: Computer Player Wins
+
 ```
-movepet Billiard Room
-🐾 Moved Fortune the Cat from Armory to Billiard Room
+1. Start game with AI1 (computer) at space 0
+2. AI automatically takes turns every 1 second
+3. AI moves toward target, picks up items
+4. AI attacks when in same space and not seen
+5. AI wins after dealing enough damage
+6. Game Over dialog: "Winner: AI1"
 ```
 
-**Human player attacking**:
+### Scenario 3: Target Escapes
+
 ```
-attack Alice
-⚔️ Alice attacked Doctor Lucky with a poke in the eye for 1 damage!
-💚 Target health remaining: 1
+1. Start game with maxTurns=10
+2. Players take 10 turns without killing target
+3. Turn counter reaches 10/10
+4. Game Over dialog: "Target ESCAPED! Remaining health: X"
 ```
 
-**Human player winning**:
-```
-attack Alice
-🎉🎉🎉 Alice WINS! 🎉🎉🎉
-Alice killed Doctor Lucky with a poke in the eye for 1 damage!
-The target is dead!
-```
+### Scenario 4: Mixed Players
 
-**Pet DFS wandering**:
 ```
-Turn 3 | Player: Alice
-...
-→ Target moved to: Drawing Room
-🐾 Fortune the Cat wandered to: Dining Hall
-
-Turn 4 | Player: Bob
-...
-→ Target moved to: Foyer
-🐾 Fortune the Cat wandered to: Trophy Room
+1. Add Alice (human), Bob (human), AI1 (computer)
+2. Turns alternate: Alice → Bob → AI1 → Alice → ...
+3. Human turns: wait for user input
+4. AI turns: auto-execute after 1 second delay
+5. Game continues until win condition met
 ```
 
 ---
 
-## 14. Project Structure
+## 15. Input Validation
+
+The GUI provides robust error handling:
+
+| Invalid Input | Detection | User Feedback |
+|---------------|-----------|---------------|
+| Player count > 10 | On input | Error dialog: "Must be between 1 and 10" |
+| Player count < 1 | On input | Error dialog |
+| Non-numeric player count | On input | Error dialog: "Invalid input" |
+| Duplicate player name | On add | Error dialog: "Player already exists", retry |
+| Invalid space index | On input | Error dialog with valid range, retry |
+| Non-numeric space index | On input | Error dialog, retry |
+| Empty player name | On input | Error dialog, retry |
+| Click non-neighbor | On click | Message: "Not a neighbor!" |
+| Attack from different room | On 'A' key | Dialog: "Target not in same room" |
+| Pickup with no items | On 'P' key | Message: "No items here" |
+| Invalid space name (move pet) | On execute | Error message displayed |
+
+---
+
+## 16. Project Structure
 ```
 KillDrLucky/
 ├── src/
 │   └── killdrlucky/
-│       ├── Driver.java                  # Entry point
-│       ├── World.java                   # Main game model
-│       ├── GameController.java          # MVC Controller
-│       ├── Player.java                  # Human player
-│       ├── ComputerPlayer.java          # AI player
-│       ├── Target.java                  # Dr. Lucky
-│       ├── Pet.java                     # Target's pet (NEW)
-│       ├── Room.java                    # Space implementation
-│       ├── Weapon.java                  # Item implementation
-│       ├── Command.java                 # Command interface (NEW)
-│       ├── MoveCommand.java             # Move action (NEW)
-│       ├── PickUpCommand.java           # Pickup action (NEW)
-│       ├── LookAroundCommand.java       # Look action (NEW)
-│       ├── AttackCommand.java           # Attack action (NEW)
-│       ├── MovePetCommand.java          # Move pet action (NEW)
-│       ├── AddPlayerCommand.java        # Add player (NEW)
-│       ├── DescribePlayerCommand.java   # Info query (NEW)
-│       ├── DescribeSpaceCommand.java    # Info query (NEW)
-│       ├── AttackStatus.java            # Attack result enum
-│       ├── WorldParser.java             # File parser
-│       ├── AxisAlignedVisibility.java   # Visibility strategy
-│       └── ...                          # Interfaces and utilities
+│       ├── Driver.java                    # Text-mode entry point
+│       ├── GuiDriver.java                 # GUI entry point (NEW)
+│       ├── World.java                     # Main game model (MODIFIED)
+│       ├── GameModelApi.java              # Model interface (MODIFIED)
+│       ├── ActionResult.java              # Result class (NEW)
+│       ├── GameState.java                 # State snapshot (NEW)
+│       ├── GameController.java            # Text controller (PRESERVED)
+│       ├── GuiController.java             # GUI controller (NEW)
+│       ├── ControllerInterface.java       # Controller interface (NEW)
+│       ├── GameView.java                  # Main view (NEW)
+│       ├── GameViewInterface.java         # View interface (NEW)
+│       ├── WorldPanel.java                # World renderer (NEW)
+│       ├── WorldPanelInterface.java       # Panel interface (NEW)
+│       ├── Player.java                    # Human player
+│       ├── ComputerPlayer.java            # AI player
+│       ├── Target.java                    # Dr. Lucky
+│       ├── Pet.java                       # Target's pet
+│       ├── Room.java                      # Space implementation
+│       ├── Weapon.java                    # Item implementation
+│       ├── Command.java                   # Command interface
+│       ├── MoveCommand.java               # Move action
+│       ├── PickUpCommand.java             # Pickup action
+│       ├── LookAroundCommand.java         # Look action
+│       ├── AttackCommand.java             # Attack action
+│       ├── MovePetCommand.java            # Move pet action
+│       ├── AddPlayerCommand.java          # Add player
+│       ├── DescribePlayerCommand.java     # Info query
+│       ├── DescribeSpaceCommand.java      # Info query
+│       ├── AttackStatus.java              # Attack result enum
+│       ├── WorldParser.java               # File parser
+│       ├── ReadOnlyWorld.java             # Read-only interface (MODIFIED)
+│       ├── AxisAlignedVisibility.java     # Visibility strategy
+│       └── ...                            # Interfaces and utilities
+├── test/
+│   └── killdrlucky/
+│       ├── ActionResultTest.java          # Test ActionResult (NEW)
+│       ├── GameStateTest.java             # Test GameState (NEW)
+│       ├── WorldExecuteActionTest.java    # Test executeAction (NEW)
+│       ├── WorldGameStateTest.java        # Test getGameState (NEW)
+│       ├── WorldAdvanceTurnTest.java      # Test advanceTurn (NEW)
+│       ├── WorldPlayerLimitTest.java      # Test 10-player limit (NEW)
+│       ├── WorldWinnerTrackingTest.java   # Test winner tracking (NEW)
+│       ├── MockGameModel.java             # Mock for testing (NEW)
+│       ├── MockGameView.java              # Mock for testing (NEW)
+│       ├── MockWorldPanel.java            # Mock for testing (NEW)
+│       └── GuiControllerManualMockTest.java # Controller tests (NEW)
 ├── res/
-│   ├── mansion.txt                      # World specification
-│   ├── input_basics.txt                 # Input commands
-│   ├── run_basics.txt                   # Example run output
-│   └── world_map.png                    # Generated map
-├── KillDrLucky.jar                      # Executable JAR
-└── README.md                            # This file
+│   ├── mansion.txt                        # World specification
+│   └── world_map.png                      # Generated map
+├── design/
+│   ├── milestone4_uml.png                 # UML class diagrams (NEW)
+│   └── ui_sketches.png                    # UI mockups (NEW)
+├── KillDrLucky.jar                        # Executable JAR
+└── README.md                              # This file
 ```
 
 ---
 
-## 15. Limitations and Assumptions
+## 17. Design Comparison: Text vs GUI
 
-- **Text-based interface**: Graphical UI planned for future milestone
-- **Single-threaded**: No concurrent player actions
-- **File-based world**: World must be loaded from specification file
-- **No save/load**: Game state cannot be saved mid-game
-- **Linear turn order**: Players act in the order they were added
+### Text-Based Controller (Milestone 3)
 
----
+```java
+// Uses Command Pattern with Factory
+String input = "move Alice Kitchen";
+Scanner parser = new Scanner(input);
+String commandName = parser.next();
 
-## 16. Extra Credit Implementation
+Command cmd = commandFactory.get(commandName).apply(parser);
+String result = cmd.execute();  // Returns String
+out.append(result);
 
-### DFS Pet Wandering
-
-The pet automatically moves after each turn following a **depth-first traversal** pattern:
-
-**Algorithm**:
-1. Use a stack to track the current traversal path
-2. Mark visited spaces to avoid revisiting
-3. At each step:
-   - If current space has unvisited neighbors → push them onto stack, move to top
-   - If no unvisited neighbors → pop stack (backtrack)
-   - If stack is empty → restart DFS from space 0
-
-**Evidence in output**:
-```
-Turn 1: Pet moves to space 2 (neighbor of 0)
-Turn 2: Pet moves to space 5 (neighbor of 2)
-Turn 3: Pet moves to space 8 (neighbor of 5)
-Turn 4: Pet backtracks to space 5 (no unvisited neighbors from 8)
-...
+if (cmd.isTurnAction()) {
+    model.moveTarget();
+    turnCount++;
+}
 ```
 
-This creates a systematic traversal pattern rather than random movement, ensuring the pet eventually visits all spaces before restarting.
+### GUI Controller (Milestone 4)
+
+```java
+// Direct event handling
+public void handleClick(int x, int y) {
+    int spaceIdx = worldPanel.getSpaceAt(x, y);
+    GameState state = model.getGameState();  // Get state snapshot
+    
+    if (neighbors.contains(spaceIdx)) {
+        ActionResult result = model.executeAction(
+            state.currentPlayerName, "move", spaceName);
+        
+        view.addMessage(result.message);
+        
+        if (result.isTurnAction()) {
+            model.moveTarget();
+            model.advanceTurn();
+            updateView();
+        }
+    }
+}
+```
+
+**Key Difference**: GUI uses direct event handlers instead of parsing text commands.
 
 ---
 
-## 17. References
+## 18. Example Runs
 
-The following references were used during the design and implementation:
+### GUI Mode Screenshots
 
-- **Java SE 17 API Documentation** – for `List`, `Stack`, `Set`, `Path`, `BufferedImage`, and I/O classes
-- **Design Patterns: Elements of Reusable Object-Oriented Software** (Gang of Four) – for Command and Strategy patterns
-- **Depth-First Search Algorithm** – standard graph traversal algorithm for pet wandering
-- **Stack Overflow** – for troubleshooting JAR manifest issues and console output redirection
-- **Eclipse Documentation** – for creating runnable JAR files and run configurations
+Due to the graphical nature of Milestone 4, example runs are demonstrated through:
+
+1. **Welcome Screen**: Shows on startup
+2. **Player Setup**: Dialog sequence for adding players
+3. **Active Gameplay**: World map with characters
+4. **Game Over**: Victory or defeat dialog
+
+### Demonstrating All Requirements
+
+The GUI implementation demonstrates:
+
+- ✅ Welcome screen with credits and resources
+- ✅ JMenu with New Game (new world), Restart (current world), Quit
+- ✅ Resizable window (300x300 minimum)
+- ✅ Graphical world representation
+- ✅ Target character overlay (red circle with 'T')
+- ✅ Player overlays (green/blue circles, up to 10 players)
+- ✅ No pet overlay (per requirement: "but not the pet")
+- ✅ Scrollable view for large worlds
+- ✅ Status bar showing current turn and player info
+- ✅ Click player icon for description
+- ✅ Click space to move (validates neighbors)
+- ✅ Keyboard shortcuts: P, L, A, M
+- ✅ Clear action result messages
 
 ---
 
-## 18. Author Information
+## 19. Differences from Previous Milestones
 
-**Course**: CS 5010 - Program Design Paradigms  
-**Milestone**: 3  
-**Version**: 3.0  
-**Date**: November 2024
+### Milestone 3 → Milestone 4
 
----
+**Added (Model)**:
+- `ActionResult` class for structured results
+- `GameState` class for state snapshots
+- `executeAction()` unified action handler
+- `getGameState()` for state queries
+- `advanceTurn()` for turn management
+- `winnerName` field for tracking winner
+- 10-player maximum enforcement
 
-## 19. Changes from Previous Milestones
+**Added (View)**:
+- Complete Swing GUI framework
+- `GameView` with welcome and game screens
+- `WorldPanel` for rendering world
+- Menu bar with File menu
+- Keyboard bindings for actions
+- Mouse event handling
+- Dialog prompts for user input
 
-### Milestone 2 → Milestone 3
-
-**Added**:
-- Pet class and parsing
-- Attack mechanics with visibility checking
-- Win/lose conditions
-- Command pattern implementation
-- MovePet and Attack commands
-- Enhanced look around with neighbor details
-- DFS pet wandering (extra credit)
-- Updated AI to prioritize attacking
+**Added (Controller)**:
+- `GuiController` for GUI event handling
+- `ControllerInterface` for abstraction
+- Automatic computer turn execution
+- Timer-based turn chaining
+- Enhanced game over messages
 
 **Modified**:
-- `visibleFrom()` now accounts for pet location
-- `describeSpace()` includes pet and more details
-- `lookAround()` shows neighboring space contents
-- `autoAction()` includes attack logic
+- `ReadOnlyWorld` interface (added `getPet()`, `getPlayers()`)
+- `GameModelApi` interface (added new methods)
+- `World` class (implemented new methods)
 
-**Improved**:
-- Better error messages
-- More informative console output
-- Clearer turn progression indicators
+**Preserved**:
+- All Milestone 1-3 functionality
+- Text-based mode still available
+- All Command classes
+- All game rules and mechanics
 
 ---
 
-## 20. Quick Start Guide
+## 20. External Resources Used
+
+The following resources were used during development:
+
+- **Java SE 17 API Documentation** – for Swing components (`JFrame`, `JPanel`, `JMenu`, `JOptionPane`), layout managers (`BorderLayout`, `CardLayout`, `GridBagLayout`), and event handling (`MouseListener`, `KeyListener`)
+- **Design Patterns: Elements of Reusable Object-Oriented Software** (Gang of Four) – for MVC and Observer patterns
+- **Java Swing Tutorial** (Oracle) – for GUI best practices and layout management
+- **Stack Overflow** – for troubleshooting event listener focus issues and CardLayout usage
+- **Eclipse IDE Documentation** – for creating runnable JAR files and debugging GUI applications
+
+---
+
+## 21. Known Limitations
+
+- **Single window**: Only one game can run at a time
+- **No undo**: Actions cannot be reversed
+- **No save/load**: Game state cannot be saved mid-game
+- **Fixed cell size**: World scaling is predetermined (cellSize=30)
+- **No animations**: Character movements are instantaneous
+- **Timer-based AI**: 1-second delay is hardcoded
+- **Simple graphics**: Uses basic shapes and colors
+
+---
+
+## 22. Future Enhancements
+
+Potential improvements for future milestones:
+
+- **Improved graphics**: Custom sprites for characters and items
+- **Animations**: Smooth transitions for movements
+- **Sound effects**: Audio feedback for actions
+- **Network play**: Multiplayer over network
+- **Save/load game**: Persist game state to file
+- **Replay mode**: Replay recorded games
+- **Statistics**: Track player performance over multiple games
+- **Difficulty levels**: Adjustable AI intelligence
+- **Custom world editor**: GUI tool for creating worlds
+
+---
+
+## 23. Quick Start Guide
+
+### First Time Setup
 ```bash
-# 1. Compile and create JAR in Eclipse (see section 4)
+# 1. Ensure you have Java 17+
+java -version
 
-# 2. Verify JAR works
-java -jar KillDrLucky.jar mansion.txt 50
+# 2. Navigate to project directory
+cd /path/to/KillDrLucky
 
-# 3. Play interactively
-# Enter commands like: add Alice 0 false 5, start, look Alice, etc.
-
-# 4. Or generate example runs automatically
-java -jar KillDrLucky.jar mansion.txt 100 < input_basics.txt > run_basics.txt
+# 3. Run GUI version
+java -jar res/KillDrLucky.jar res/mansion.txt 50
 ```
 
-**That's it!** You're ready to play Kill Dr Lucky! 🎉
+### Alternative: JAR in Root Directory
+```bash
+# If you move JAR to root
+java -jar KillDrLucky.jar mansion.txt 50
+```
+
+### Common Run Commands
+
+```bash
+# Standard game (50 turns)
+java -jar res/KillDrLucky.jar res/mansion.txt 50
+
+# Short game (20 turns)
+java -jar res/KillDrLucky.jar res/mansion.txt 20
+
+# Long game (100 turns)
+java -jar res/KillDrLucky.jar res/mansion.txt 100
+
+# Using absolute paths
+java -jar /full/path/to/res/KillDrLucky.jar /full/path/to/mansion.txt 50
+```
+
+### Typical Game Session
+```
+1. Application launches → Welcome screen appears
+2. Click "Start New Game" button
+3. Enter number of players (e.g., "2")
+4. For each player:
+   - Enter name (e.g., "Alice")
+   - Enter starting space (e.g., "0")
+   - Choose human or computer
+5. Game screen appears with world map
+6. Click neighboring spaces to move
+7. Press P to pick up items
+8. Press L to look around
+9. Press A to attack when in target's space
+10. Game ends when target dies or max turns reached
+11. Click "Restart" to play again
+```
+
+---
+
+## 24. Troubleshooting
+
+### Common Issues
+
+| Problem | Cause | Solution |
+|---------|-------|----------|
+| Keyboard not working | Focus lost after click | Click on window, keys should work again |
+| Map too large | cellSize too big | Modify `WorldPanel.cellSize` to 20 or 25 |
+| Map too small | cellSize too small | Increase `WorldPanel.cellSize` to 40 or 50 |
+| Can't see all spaces | World exceeds viewport | Use scrollbars to navigate |
+| Player count error | Entered > 10 | Enter value between 1-10 |
+| Duplicate name error | Same name twice | Enter unique player names |
+| Space index error | Invalid index | Use index from 0 to (spaces-1) |
+| Game won't start | Cancelled player setup | Restart and complete all player dialogs |
+
+---
+
+## 25. Video Demonstration
+
+A video demonstration of the GUI functionality has been created showing:
+
+1. Welcome screen with credits
+2. Menu system usage
+3. Player setup process
+4. Mouse-based movement
+5. Keyboard shortcuts (P, L, A, M)
+6. Clicking player icons for information
+7. Computer player automation
+8. Game over scenarios (win and escape)
+9. Window resizing behavior
+10. Restart game functionality
+
+**Video file**: `milestone4_demo.mp4` (included in submission)
+
+---
+
+## 26. Design Document
+
+Complete design documentation included in submission:
+
+- **Design Document PDF**: Contains UML diagrams and design rationale
+- **Model UML**: Shows ActionResult, GameState, and interface relationships
+- **View UML**: Shows GameView, WorldPanel, and Swing components
+- **Controller UML**: Shows GuiController and event handling
+- **UI Sketches**: Hand-drawn mockups of welcome and game screens
+- **Sequence Diagrams**: Data flow for key interactions
+
+---
+
+## 27. Compliance Checklist
+
+### Required Features
+
+- ✅ Welcome/about screen with creator credits and resources
+- ✅ JMenu with New Game (new world), Restart (current world), Quit
+- ✅ Resizable JFrame (minimum 300x300)
+- ✅ Graphical world representation (majority of screen)
+- ✅ Target character overlay
+- ✅ Player overlays (supports up to 10 players)
+- ✅ No pet overlay (per requirement: "but not the pet")
+- ✅ Scrollable view for large worlds
+- ✅ Current turn indicator
+- ✅ Player location information
+- ✅ Click player for description
+- ✅ Click space to move
+- ✅ Keyboard pickup (P key)
+- ✅ Keyboard look around (L key)
+- ✅ Keyboard attack (A key)
+- ✅ Clear action result display
+- ✅ Invalid move prevention
+
+### Design Requirements
+
+- ✅ Model refactored to separate from text controller
+- ✅ Model UML with interface isolation
+- ✅ UI sketches created
+- ✅ View UML with custom classes
+- ✅ Controller UML with interfaces
+- ✅ Model tested in isolation
+- ✅ Controller tested with mocks
+- ✅ Text-based mode still supported
+
+---
+
+## 28. Author Information
+
+**Course**: CS 5010 - Program Design Paradigms  
+**Milestone**: 4  
+**Version**: 4.0  
+**Date**: December 2024
+
+---
+
+## 29. Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.0 | Oct 2024 | Initial world parsing and map generation |
+| 2.0 | Oct 2024 | Added players, movement, and turn system |
+| 3.0 | Nov 2024 | Added pet, attacks, win conditions, Command pattern |
+| 4.0 | Dec 2024 | Added complete GUI with Swing, refactored Model |
+
+---
+
+**That's it!** You're ready to play Kill Dr Lucky with the new graphical interface! 🎮✨
