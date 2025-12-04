@@ -834,7 +834,7 @@ public class World implements WorldModel, GameModelApi {
       
       return new ActionResult(true, message, isTurn);
       
-    } catch (Exception e) {
+    } catch (IllegalArgumentException | IllegalStateException e) {
       return new ActionResult(false, "Error: " + e.getMessage(), false);
     }
   }

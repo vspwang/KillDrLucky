@@ -13,18 +13,18 @@ public class Rect {
   /**
    * Constructs a Rect with the given corner points.
    *
-   * @param ul upper left Point
-   * @param lr lower right Point
+   * @param ulParam upper left Point
+   * @param lrParam lower right Point
    */
-  public Rect(Point ul, Point lr) {
-    if (ul == null || lr == null) {
+  public Rect(Point ulParam, Point lrParam) {
+    if (ulParam == null || lrParam == null) {
       throw new IllegalArgumentException("Points shouldn't be null.");
     }
-    if (ul.getRow() > lr.getRow() || ul.getCol() > lr.getCol()) {
+    if (ulParam.getRow() > lrParam.getRow() || ulParam.getCol() > lrParam.getCol()) {
       throw new IllegalArgumentException("Point ul should be above and on the left of Point lr.");
     }
-    this.ul = ul;
-    this.lr = lr;
+    this.ul = ulParam;
+    this.lr = lrParam;
     
   }
   

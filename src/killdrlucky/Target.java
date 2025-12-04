@@ -14,26 +14,26 @@ public class Target implements Character {
   /**
    * Constructs a Target.
    *
-   * @param name       the target's name
-   * @param health     initial health value
-   * @param startIndex starting room index
+   * @param nameParam       the target's name
+   * @param healthParam     initial health value
+   * @param startIndexParam starting room index
    * @throws IllegalArgumentException if name is null/blank or health < 0 or index
    *                                  < 0
    */
-  public Target(String name, int health, int startIndex) {
-    if (name == null || name.isBlank()) {
+  public Target(String nameParam, int healthParam, int startIndexParam) {
+    if (nameParam == null || nameParam.isBlank()) {
       throw new IllegalArgumentException("Target name cannot be null or blank.");
     }
-    if (health < 0) {
+    if (healthParam < 0) {
       throw new IllegalArgumentException("Health cannot be negative.");
     }
-    if (startIndex < 0) {
+    if (startIndexParam < 0) {
       throw new IllegalArgumentException("Room index must be non-negative.");
     }
 
-    this.name = name;
-    this.health = health;
-    this.currentSpaceIndex = startIndex;
+    this.name = nameParam;
+    this.health = healthParam;
+    this.currentSpaceIndex = startIndexParam;
   }
 
   @Override
@@ -65,6 +65,8 @@ public class Target implements Character {
 
   /**
    * Sets the current health of the target.
+   * 
+   * @param h current health of the target
    */
   public void setHealth(int h) {
     if (h < 0) {

@@ -17,28 +17,28 @@ public class Room implements Space {
   /**
    * Creating a new room with following parameters.
    *
-   * @param index room Index
-   * @param name room Name
-   * @param area room Rect
-   * @param items items in room
+   * @param indexParam room Index
+   * @param nameParam room Name
+   * @param areaParam room Rect
+   * @param itemsParam items in room
    */
-  public Room(int index, String name, Rect area, List<Item> items) {
-    if (index < 0) {
+  public Room(int indexParam, String nameParam, Rect areaParam, List<Item> itemsParam) {
+    if (indexParam < 0) {
       throw new IllegalArgumentException("Index must be non-negative.");
     }
-    if (name == null || name.isBlank()) {
+    if (nameParam == null || nameParam.isBlank()) {
       throw new IllegalArgumentException("Name cannot be null or blank.");
     }
-    if (area == null) {
+    if (areaParam == null) {
       throw new IllegalArgumentException("Area cannot be null.");
     }
-    if (items == null) {
+    if (itemsParam == null) {
       throw new IllegalArgumentException("Items cannot be null.");
     }
-    this.index = index;
-    this.name = name;
-    this.area = area;
-    this.items = new ArrayList<>(items);
+    this.index = indexParam;
+    this.name = nameParam;
+    this.area = areaParam;
+    this.items = new ArrayList<>(itemsParam);
   }
 
   @Override

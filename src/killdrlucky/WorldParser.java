@@ -82,8 +82,8 @@ public class WorldParser {
     // --- Line 1: rows cols worldName...
     String line1 = readNonEmpty(br, 1);
     ParsedHead h1 = parseHeadWithInts(line1, 2, 1);
-    int rows = h1.ints[0];
-    int cols = h1.ints[1];
+    final int rows = h1.ints[0];
+    final int cols = h1.ints[1];
     final String worldName = mustNonBlank(h1.rest, 1, "world name");
 
     // --- Line 2: targetHealth targetName...

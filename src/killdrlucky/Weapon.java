@@ -15,26 +15,26 @@ public class Weapon implements Item {
   /**
    * Constructs a Weapon object.
    *
-   * @param name      the name of the weapon
-   * @param damage    the damage value (must be non-negative)
-   * @param roomIndex the index of the room containing this weapon
+   * @param nameParam      the name of the weapon
+   * @param damageParam    the damage value (must be non-negative)
+   * @param roomIndexParam the index of the room containing this weapon
    * @throws IllegalArgumentException if name is null/blank or damage < 0 or
    *                                  roomIndex < 0
    */
-  public Weapon(String name, int damage, int roomIndex) {
-    if (name == null || name.isBlank()) {
+  public Weapon(String nameParam, int damageParam, int roomIndexParam) {
+    if (nameParam == null || nameParam.isBlank()) {
       throw new IllegalArgumentException("Weapon name cannot be null or blank.");
     }
-    if (damage < 0) {
+    if (damageParam < 0) {
       throw new IllegalArgumentException("Weapon damage must be non-negative.");
     }
     if (roomIndex < 0) {
       throw new IllegalArgumentException("Room index must be non-negative.");
     }
 
-    this.name = name;
-    this.damage = damage;
-    this.roomIndex = roomIndex;
+    this.name = nameParam;
+    this.damage = damageParam;
+    this.roomIndex = roomIndexParam;
   }
 
   @Override

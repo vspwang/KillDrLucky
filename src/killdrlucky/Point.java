@@ -14,15 +14,15 @@ public final class Point {
    *
    * Constructs a Point with the given coordinates.
    *
-   * @param row row index
-   * @param col col index
+   * @param rowParam row index
+   * @param colParam col index
    */
-  public Point(int row, int col) {
-    if (row < 0 || col < 0) {
+  public Point(int rowParam, int colParam) {
+    if (rowParam < 0 || colParam < 0) {
       throw new IllegalArgumentException("Row and Col should be non-negative integers.");
     }
-    this.row = row;
-    this.col = col;
+    this.row = rowParam;
+    this.col = colParam;
     
   }
   
