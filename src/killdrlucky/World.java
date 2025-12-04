@@ -39,6 +39,9 @@ public class World implements WorldModel, GameModelApi {
   
   private final Stack<Integer> dfsStack;
   private final Set<Integer> dfsVisited;
+  
+  private int currentPlayerIndex = 0;
+
 
   /**
    * Constructs a World object from parsed data.
@@ -802,6 +805,73 @@ public class World implements WorldModel, GameModelApi {
     File outputFile = new File(filename);
     ImageIO.write(img, "png", outputFile);
   }
+  
+  @Override
+  public ActionResult executeAction(String playerName, String actionType, String parameter) {
+    try {
+      String message;
+      boolean isTurn = true;
+      
+      switch (actionType.toLowerCase()) {
+        case "move":
+          message = movePlayer(playerName, parameter);
+          break;
+        case "pickup":
+          message = pickUpItem(playerName, parameter);
+          break;
+        case "look":
+          message = lookAround(playerName);
+          break;
+        case "attack":
+          message = attackTarget(playerName, parameter);
+          break;
+        case "movepet":
+          message = movePet(parameter);
+          break;
+        default:
+          return new ActionResult(false, "Unknown action: " + actionType, false);
+      }
+      
+      return new ActionResult(true, message, isTurn);
+      
+    } catch (Exception e) {
+      return new ActionResult(false, "Error: " + e.getMessage(), false);
+    }
+  }
+
+  @Override
+  public GameState getGameState() {
+    if (players.isEmpty()) {
+      return new GameState(
+          "", false, 0, "", 0,
+          target.getHealth(), target.getCurrentSpaceIndex(),
+          pet.getCurrentSpaceIndex(), gameOver, ""
+      );
+    }
+    
+    Iplayer current = players.get(currentPlayerIndex);
+    Space currentSpace = spaces.get(current.getCurrentSpaceIndex());
+    
+    return new GameState(
+        current.getName(),
+        current.isComputerControlled(),
+        current.getCurrentSpaceIndex(),
+        currentSpace.getName(),
+        currentPlayerIndex,
+        target.getHealth(),
+        target.getCurrentSpaceIndex(),
+        pet.getCurrentSpaceIndex(),
+        gameOver,
+        gameOver ? "Game Over" : ""
+    );
+  }
+
+  @Override
+  public void advanceTurn() {
+    if (!players.isEmpty()) {
+      currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+    }
+  }
 
   // ---------- Internal Utilities ----------
 
@@ -878,4 +948,5 @@ public class World implements WorldModel, GameModelApi {
         .orElseThrow(() -> new IllegalArgumentException("Player not found: " + name));
   }
 
+  
 }

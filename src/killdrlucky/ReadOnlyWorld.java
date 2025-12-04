@@ -84,4 +84,18 @@ public interface ReadOnlyWorld {
    * @return list of all items
    */
   List<Item> getItems();
+  
+  /**
+   * Returns the pet in the world.
+   *
+   * @return the pet character
+   */
+  Pet getPet();
+  
+  /**
+   * Returns all players currently in the world.
+   *
+   * @return a read-only list of all players
+   */
+  List<Iplayer> getPlayers();
 }

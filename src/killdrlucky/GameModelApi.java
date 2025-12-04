@@ -169,6 +169,28 @@ public interface GameModelApi extends ReadOnlyWorld {
    * <p>This implements the extra credit wandering pet feature.
    */
   void movePetDfs();
+  
+  /**
+   * Execute a game action and return structured result.
+   * 
+   * @param playerName the name of the player performing the action
+   * @param actionType the type of action: "move", "pickup", "look", "attack", "movepet"
+   * @param parameter the action parameter (e.g., destination for move, item name for pickup)
+   * @return ActionResult containing success status, message, and whether it's a turn action
+   */
+  ActionResult executeAction(String playerName, String actionType, String parameter);
+  
+  /**
+   * Get current game state as an immutable snapshot.
+   * 
+   * @return GameState object with current player info, target/pet locations, etc.
+   */
+  GameState getGameState();
+  
+  /**
+   * Advance to the next player's turn.
+   */
+  void advanceTurn();
 
 
 }
