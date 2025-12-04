@@ -63,25 +63,31 @@ public class GuiController implements ControllerInterface {
     });
 
     // Menu callbacks
-    view.setOnStartNewGame(() -> handleNewGame());
-    view.setOnRestartGame(() -> handleRestartGame());
+    view.setOnStartNewGame(() -> handleStartGame());
+
+    view.setOnStartNewGameWithNewWorld((newWorldFile) -> {
+      worldFilePath = newWorldFile;  
+      handleStartGame();
+    });
+    
+    view.setOnRestartGame(() -> {
+      int confirm = javax.swing.JOptionPane.showConfirmDialog(
+          null, 
+          "Restart game with current world?", 
+          "Restart", 
+          javax.swing.JOptionPane.YES_NO_OPTION);
+      
+      if (confirm == javax.swing.JOptionPane.YES_OPTION) {
+        handleStartGame();
+      }
+    });
   }
-
-  private void handleNewGame() {
-    String newWorldFile = view.promptInput("Enter world file path (e.g., res/mansion.txt):");
-    if (newWorldFile != null && !newWorldFile.trim().isEmpty()) {
-      worldFilePath = newWorldFile;
-      restartWithNewWorld();
-    }
-  }
-
-  private void handleRestartGame() {
-    int confirm = javax.swing.JOptionPane.showConfirmDialog(null,
-        "Restart game with current world?", "Restart", javax.swing.JOptionPane.YES_NO_OPTION);
-
-    if (confirm == javax.swing.JOptionPane.YES_OPTION) {
-      restartWithNewWorld();
-    }
+  
+  /**
+   * Handle starting/restarting game with current worldFilePath.
+   */
+  private void handleStartGame() {
+    restartWithNewWorld();  
   }
 
   private void restartWithNewWorld() {

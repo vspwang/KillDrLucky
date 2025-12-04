@@ -1,5 +1,6 @@
 40 43 Arrakis Palace
 90 Muad'Dib
+Fortune the Mouse
 20
  0  4  3 10 Spice Hall
  0 13  3 19 Desert Balcony

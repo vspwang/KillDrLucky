@@ -42,6 +42,7 @@ public class GameView extends JFrame implements GameViewInterface {
   private final JLabel statusLabel;
   private Runnable onStartNewGame;
   private Runnable onRestartGame;
+  private java.util.function.Consumer<String> onStartNewGameWithNewWorld;
   
   /**
    * Creates game view with welcome screen.
@@ -103,13 +104,35 @@ public class GameView extends JFrame implements GameViewInterface {
     final JMenuBar menuBar = new JMenuBar();
     final JMenu fileMenu = new JMenu("File");
     
-    JMenuItem newGameItem = new JMenuItem("New Game (New World)");
-    newGameItem.addActionListener(e -> {
-      if (onStartNewGame != null) {
-        onStartNewGame.run();
+    // 1. New Game with NEW world specification 
+    JMenuItem newGameNewWorldItem = new JMenuItem("New Game (New World)");
+    newGameNewWorldItem.addActionListener(e -> {
+      javax.swing.JFileChooser fileChooser = new javax.swing.JFileChooser("res/");
+      fileChooser.setDialogTitle("Select World File");
+      
+      // 只显示 .txt 文件
+      fileChooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
+        @Override
+        public boolean accept(java.io.File f) {
+          return f.isDirectory() || f.getName().toLowerCase().endsWith(".txt");
+        }
+        
+        @Override
+        public String getDescription() {
+          return "World Files (*.txt)";
+        }
+      });
+      
+      int result = fileChooser.showOpenDialog(this);
+      if (result == javax.swing.JFileChooser.APPROVE_OPTION) {
+        String newWorldFile = fileChooser.getSelectedFile().getAbsolutePath();
+        if (onStartNewGameWithNewWorld != null) {
+          onStartNewGameWithNewWorld.accept(newWorldFile);
+        }
       }
     });
     
+    // 2. Restart with CURRENT world specification 
     JMenuItem restartItem = new JMenuItem("Restart Game (Current World)");
     restartItem.addActionListener(e -> {
       if (onRestartGame != null) {
@@ -117,10 +140,11 @@ public class GameView extends JFrame implements GameViewInterface {
       }
     });
     
+    // 3. Quit
     JMenuItem quitItem = new JMenuItem("Quit");
     quitItem.addActionListener(e -> System.exit(0));
     
-    fileMenu.add(newGameItem);
+    fileMenu.add(newGameNewWorldItem);
     fileMenu.add(restartItem);
     fileMenu.addSeparator();
     fileMenu.add(quitItem);
@@ -206,24 +230,6 @@ public class GameView extends JFrame implements GameViewInterface {
     instructionsLabel.setFont(new Font("Arial", Font.PLAIN, 11));
     gbc.insets = new Insets(20, 10, 10, 10);
     welcomePanel.add(instructionsLabel, gbc);
-  }
-  
-  /**
-   * Set callback for starting new game.
-   * 
-   * @param callback the callback to run
-   */
-  public void setOnStartNewGame(Runnable callback) {
-    this.onStartNewGame = callback;
-  }
-  
-  /**
-   * Set callback for restarting game.
-   * 
-   * @param callback the callback to run
-   */
-  public void setOnRestartGame(Runnable callback) {
-    this.onRestartGame = callback;
   }
   
   /**
@@ -320,5 +326,32 @@ public class GameView extends JFrame implements GameViewInterface {
    */
   public WorldPanel getWorldPanel() {
     return worldPanel;
+  }
+  
+  /**
+   * Set callback for starting new game with existing world.
+   * 
+   * @param callback the callback to run
+   */
+  public void setOnStartNewGame(Runnable callback) {
+    this.onStartNewGame = callback;
+  }
+  
+  /**
+   * Set callback for starting new game with new world file.
+   * 
+   * @param callback the callback accepting world file path
+   */
+  public void setOnStartNewGameWithNewWorld(java.util.function.Consumer<String> callback) {
+    this.onStartNewGameWithNewWorld = callback;
+  }
+  
+  /**
+   * Set callback for restarting game.
+   * 
+   * @param callback the callback to run
+   */
+  public void setOnRestartGame(Runnable callback) {
+    this.onRestartGame = callback;
   }
 }
