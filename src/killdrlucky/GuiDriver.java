@@ -1,5 +1,6 @@
 package killdrlucky;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -10,11 +11,16 @@ import javax.swing.SwingUtilities;
 public class GuiDriver {
 
   /**
-   * Main entry point.
+   * Main entry point for the GUI version of the game.
+   * 
+   * @param args command-line arguments:
+   *             args[0] = path to world file (default: "res/mansion.txt")
+   *             args[1] = maximum number of turns (default: 50)
+   * @throws Exception if there is an error parsing the world file
    */
-  public static void main(String[] args) throws Exception {
+  public static void main(String[] args) throws IOException {
     String worldFile = args.length > 0 ? args[0] : "res/mansion.txt";
-    int maxTurns = args.length > 1 ? Integer.parseInt(args[1]) : 20;
+    int maxTurns = args.length > 1 ? Integer.parseInt(args[1]) : 50;
 
     // Parse world
     WorldParser parser = new WorldParser();

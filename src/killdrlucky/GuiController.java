@@ -19,11 +19,15 @@ public class GuiController implements ControllerInterface {
   
   /**
    * Creates GUI controller.
+   * 
+   * @param modelParam the game model containing game logic and state
+   * @param viewParam the game view for displaying UI and capturing user input
+   * @param maxTurnsParam the maximum number of turns allowed in the game
    */
-  public GuiController(GameModelApi model, GameViewInterface view, int maxTurns) {
-    this.model = model;
-    this.view = view;
-    this.maxTurns = maxTurns;
+  public GuiController(GameModelApi modelParam, GameViewInterface viewParam, int maxTurnsParam) {
+    this.model = modelParam;
+    this.view = viewParam;
+    this.maxTurns = maxTurnsParam;
     
     setupListeners();
     updateView();
@@ -95,6 +99,8 @@ public class GuiController implements ControllerInterface {
         break;
       case 'm':
         handleMovePet();
+        break;
+      default:
         break;
     }
   }
@@ -203,8 +209,8 @@ public class GuiController implements ControllerInterface {
     GameState state = model.getGameState();
     if (state.gameOver || currentTurn >= maxTurns) {
       String msg = state.gameOver 
-          ? "🏆 Game Over! Target eliminated!" 
-          : "⏰ Game Over! Maximum turns reached.";
+          ? "Game Over! Target eliminated!" 
+          : "Game Over! Maximum turns reached.";
       view.showMessage(msg);
       return true;
     }

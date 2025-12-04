@@ -17,6 +17,7 @@ import javax.swing.JTextArea;
  * Swing-based game view.
  */
 public class GameView extends JFrame implements GameViewInterface {
+  private static final long serialVersionUID = 1L;
   private final ReadOnlyWorld model;
   private JPanel gamePanel;
   private final JTextArea messageArea;
@@ -24,10 +25,12 @@ public class GameView extends JFrame implements GameViewInterface {
   
   /**
    * Creates game view.
+   * 
+   * @param modelParam ReadOnlyWorld model
    */
-  public GameView(ReadOnlyWorld model) {
+  public GameView(ReadOnlyWorld modelParam) {
     super("Kill Doctor Lucky");
-    this.model = model;
+    this.model = modelParam;
     
     setDefaultCloseOperation(EXIT_ON_CLOSE);
     setSize(1000, 700);

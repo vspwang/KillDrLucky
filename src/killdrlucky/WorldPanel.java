@@ -13,14 +13,17 @@ import javax.swing.JPanel;
  * Panel that renders the game world.
  */
 public class WorldPanel extends JPanel implements WorldPanelInterface {
+  private static final long serialVersionUID = 1L;
   private final ReadOnlyWorld model;
   private final int cellSize = 20;
   
   /**
    * Creates world panel.
+   * 
+   * @param modelParam ReadOnlyWorld model
    */
-  public WorldPanel(ReadOnlyWorld model) {
-    this.model = model;
+  public WorldPanel(ReadOnlyWorld modelParam) {
+    this.model = modelParam;
     int w = model.getCols() * cellSize;
     int h = model.getRows() * cellSize;
     setPreferredSize(new Dimension(w, h));
