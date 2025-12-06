@@ -847,7 +847,7 @@ public class World implements WorldModel, GameModelApi {
   public GameState getGameState() {
     if (players.isEmpty()) {
       return new GameState("", false, 0, "", 0, target.getHealth(), target.getCurrentSpaceIndex(),
-          pet.getCurrentSpaceIndex(), gameOver, winnerName // ← 改这里
+          pet.getCurrentSpaceIndex(), gameOver, winnerName 
       );
     }
 

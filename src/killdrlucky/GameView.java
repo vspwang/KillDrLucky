@@ -110,7 +110,6 @@ public class GameView extends JFrame implements GameViewInterface {
       javax.swing.JFileChooser fileChooser = new javax.swing.JFileChooser("res/");
       fileChooser.setDialogTitle("Select World File");
       
-      // 只显示 .txt 文件
       fileChooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
         @Override
         public boolean accept(java.io.File f) {
